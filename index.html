@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="en" data-theme="abyss">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PH4NTXM is a Linux Live Operating System with an embedded Adaptive Identity Engine. Every session starts fresh.">
+  <meta name="theme-color" content="#050a10">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="PH4NTXM · A session without a past">
+  <meta property="og:description" content="A Linux Live Operating System with a linked identity, network protection that blocks traffic on failure, and a common Nuke shutdown path.">
+  <meta property="og:url" content="https://ph4ntxmofficial.github.io/">
+  <meta property="og:image" content="https://ph4ntxmofficial.github.io/abyss.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="PH4NTXM · A session without a past">
+  <meta name="twitter:description" content="Linked identity. Traffic blocked on protection failure. Disposable live session.">
+  <meta name="twitter:image" content="https://ph4ntxmofficial.github.io/abyss.png">
+  <link rel="icon" type="image/png" href="ph4ntxm-logo.png">
+  <title>PH4NTXM · Adaptive Identity Live OS</title>
+  <style>
+    @font-face{font-family:Orbitron;font-style:normal;font-weight:400;font-display:swap;src:url('orbitron-v35-latin-regular.woff2') format('woff2')}
+    @font-face{font-family:RobotoMono;font-style:normal;font-weight:400;font-display:swap;src:url('roboto-mono-v31-latin-regular.woff2') format('woff2')}
+    :root{
+      --bg:#04090f;
+      --bg-soft:#07111b;
+      --panel:rgba(9,19,30,.78);
+      --panel-solid:#0b1622;
+      --line:rgba(120,183,220,.16);
+      --line-hot:rgba(25,199,255,.52);
+      --text:#eef6fb;
+      --soft:#c2cfda;
+      --muted:#8295a7;
+      --cyan:#18c7ff;
+      --cyan-soft:#75ddff;
+      --violet:#9d6cff;
+      --magenta:#ff3bd4;
+      --green:#47e398;
+      --red:#ff5066;
+      --amber:#ffc34d;
+      --display:Orbitron,system-ui,sans-serif;
+      --mono:RobotoMono,ui-monospace,SFMono-Regular,Consolas,monospace;
+      --sans:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+      --shadow:0 24px 80px rgba(0,0,0,.4);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;scroll-padding-top:96px}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;overflow-x:hidden}
+    body::before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradient(circle at var(--mx,72%) var(--my,10%),rgba(24,199,255,.1),transparent 23rem),radial-gradient(circle at 10% 54%,rgba(157,108,255,.08),transparent 28rem),linear-gradient(180deg,#04090f 0%,#06101a 48%,#04090f 100%)}
+    body::after{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:.24;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,black,transparent 78%)}
+    ::selection{background:rgba(24,199,255,.28);color:white}
+    a{color:inherit;text-decoration:none}
+    button{font:inherit}
+    img{max-width:100%;display:block}
+    .shell{width:min(1180px,calc(100% - 40px));margin-inline:auto}
+    .skip{position:fixed;left:16px;top:-60px;z-index:100;background:white;color:#06101a;padding:10px 14px;border-radius:8px;font-weight:800}.skip:focus{top:16px}
+    .progress{position:fixed;inset:0 0 auto;height:2px;z-index:99;background:linear-gradient(90deg,var(--cyan),var(--magenta));transform:scaleX(0);transform-origin:left}
+    .nav-wrap{position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(120,183,220,.12);background:rgba(4,9,15,.74);backdrop-filter:blur(22px)}
+    .nav{height:76px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .wordmark{display:flex;align-items:center;gap:12px;font-family:var(--display);font-size:14px;letter-spacing:.18em}
+    .wordmark img{width:34px;height:34px;object-fit:contain;filter:drop-shadow(0 0 16px rgba(24,199,255,.45))}
+    .wordmark span{background:linear-gradient(90deg,#fff 5%,var(--cyan-soft));background-clip:text;color:transparent}
+    .nav-links{display:flex;align-items:center;gap:26px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--soft)}
+    .nav-links a{position:relative;padding:10px 0}.nav-links a::after{content:"";position:absolute;left:0;right:100%;bottom:3px;height:1px;background:var(--cyan);transition:right .25s ease}.nav-links a:hover::after,.nav-links a:focus-visible::after{right:0}
+    .nav-cta{display:inline-flex!important;align-items:center;gap:8px;padding:10px 14px!important;border:1px solid var(--line-hot);border-radius:8px;background:rgba(24,199,255,.07);color:#fff!important}.nav-cta::after{display:none}
+    .menu-toggle{display:none;border:1px solid var(--line);background:var(--panel);color:white;border-radius:8px;padding:9px 11px;cursor:pointer}
+    .hero{min-height:calc(100vh - 76px);display:grid;grid-template-columns:minmax(0,1.06fr) minmax(390px,.94fr);align-items:center;gap:70px;padding:84px 0 72px}
+    .eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan-soft)}
+    .eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 5px rgba(71,227,152,.08),0 0 18px rgba(71,227,152,.7)}
+    .hero h1{font-family:var(--display);font-size:clamp(3.4rem,7.2vw,6.8rem);font-weight:400;line-height:.94;letter-spacing:-.045em;margin:24px 0 22px;max-width:850px}
+    .hero h1 .ghost{display:block;color:transparent;-webkit-text-stroke:1px rgba(194,229,247,.42)}
+    .hero h1 .hot{display:block;background:linear-gradient(92deg,#fff 2%,var(--cyan-soft) 52%,#cdbdff 100%);background-clip:text;color:transparent;text-shadow:0 0 44px rgba(24,199,255,.12)}
+    .hero-copy{max-width:650px;font-size:clamp(1rem,1.5vw,1.16rem);color:var(--soft)}
+    .hero-copy strong{color:#fff}
+    .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:11px;min-height:48px;padding:0 18px;border-radius:9px;border:1px solid var(--line);font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;transition:transform .2s ease,border-color .2s ease,background .2s ease,box-shadow .2s ease}
+    .btn:hover{transform:translateY(-2px);border-color:var(--line-hot)}
+    .btn-primary{background:linear-gradient(110deg,rgba(24,199,255,.18),rgba(157,108,255,.16));border-color:rgba(24,199,255,.55);box-shadow:0 14px 44px rgba(24,199,255,.1)}
+    .btn-primary::after{content:"↗";font-size:15px}
+    .btn-quiet{background:rgba(255,255,255,.025)}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:24px;margin-top:38px;color:var(--muted);font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+    .hero-meta span{display:flex;align-items:center;gap:8px}.hero-meta i{width:4px;height:4px;background:var(--cyan);border-radius:50%;box-shadow:0 0 10px var(--cyan)}
+    .cockpit{position:relative;isolation:isolate}
+    .cockpit::before{content:"";position:absolute;width:80%;aspect-ratio:1;left:10%;top:8%;z-index:-1;border-radius:50%;background:radial-gradient(circle,rgba(24,199,255,.13),transparent 64%);filter:blur(18px)}
+    .terminal{position:relative;border:1px solid rgba(120,183,220,.24);border-radius:16px;background:linear-gradient(160deg,rgba(11,24,37,.94),rgba(5,12,20,.96));box-shadow:var(--shadow),0 0 0 1px rgba(255,255,255,.025) inset;overflow:hidden;transform:none}
+    .terminal::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(rgba(255,255,255,.018) 50%,transparent 50%);background-size:100% 4px;opacity:.22}
+    .terminal-bar{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid var(--line);background:rgba(2,7,12,.5)}
+    .terminal-title{font-family:var(--display);font-size:10px;letter-spacing:.12em;color:var(--cyan-soft)}
+    .lights{display:flex;gap:8px}.lights i{width:8px;height:8px;border-radius:50%;background:#233647}.lights i:nth-child(2){background:var(--amber)}.lights i:nth-child(3){background:var(--green);box-shadow:0 0 10px rgba(71,227,152,.6)}
+    .terminal-body{padding:24px}
+    .mode-switch{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:5px;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px}
+    .mode-switch button{border:0;border-radius:7px;background:transparent;color:var(--muted);padding:10px 8px;cursor:pointer;font-family:var(--mono);font-size:10px;letter-spacing:.08em;transition:.2s ease}.mode-switch button.active{background:rgba(24,199,255,.11);color:#fff;box-shadow:0 0 0 1px rgba(24,199,255,.2) inset}
+    .pilot-head{display:flex;align-items:center;justify-content:space-between;margin:28px 0 20px}.pilot-state{display:flex;align-items:center;gap:13px}.pilot-state .orb{width:34px;height:34px;border-radius:50%;background:var(--green);box-shadow:0 0 0 8px rgba(71,227,152,.07),0 0 30px rgba(71,227,152,.35)}.pilot-state strong{display:block;font-family:var(--display);font-size:16px;font-weight:400;letter-spacing:.05em}.pilot-state small{display:block;color:var(--muted);font-family:var(--mono);font-size:9px;margin-top:2px}.mode-value{font-family:var(--mono);font-size:9px;color:var(--cyan-soft);border:1px solid var(--line);border-radius:99px;padding:6px 9px}
+    .checks{display:grid;gap:2px}.check{display:grid;grid-template-columns:1fr auto;align-items:center;padding:10px 0;border-bottom:1px solid rgba(120,183,220,.08);font-family:var(--mono);font-size:10px;color:var(--soft)}.check:last-child{border-bottom:0}.active-state{display:flex;align-items:center;gap:8px;color:var(--green);font-size:9px}.active-state::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+    .terminal-foot{display:flex;align-items:center;justify-content:space-between;margin-top:20px;padding-top:16px;border-top:1px dashed rgba(120,183,220,.16);color:var(--muted);font-family:var(--mono);font-size:8px;letter-spacing:.08em;text-transform:uppercase}
+    .signal{display:flex;align-items:end;gap:3px}.signal i{display:block;width:3px;background:var(--cyan);opacity:.8}.signal i:nth-child(1){height:4px}.signal i:nth-child(2){height:7px}.signal i:nth-child(3){height:10px}.signal i:nth-child(4){height:14px}
+    .strip{border-block:1px solid var(--line);background:rgba(7,16,26,.72);overflow:hidden}
+    .strip-track{display:flex;width:max-content;animation:marquee 26s linear infinite;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}
+    .strip-track span{display:flex;align-items:center;gap:18px;padding:18px 22px}.strip-track span::after{content:"✦";color:var(--cyan)}
+    @keyframes marquee{to{transform:translateX(-50%)}}
+    section{padding:112px 0}
+    .section-head{display:grid;grid-template-columns:.8fr 1.2fr;gap:60px;align-items:end;margin-bottom:52px}
+    .section-kicker{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--cyan);text-transform:uppercase;margin-bottom:14px}
+    .section-head h2{font-family:var(--display);font-weight:400;font-size:clamp(2rem,4.4vw,4.2rem);line-height:1.08;letter-spacing:-.035em;margin:0}
+    .section-head p{margin:0;color:var(--muted);max-width:620px;font-size:1.02rem}
+    .architecture{position:relative}
+    .architecture::before{content:"";position:absolute;inset:8% auto auto -12%;width:26rem;height:26rem;border:1px solid rgba(24,199,255,.08);border-radius:50%;box-shadow:0 0 0 44px rgba(24,199,255,.018),0 0 0 88px rgba(24,199,255,.012)}
+    .chain{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;position:relative}
+    .chain::before{content:"";position:absolute;left:7%;right:7%;top:31px;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),var(--violet),transparent);opacity:.45}
+    .node{position:relative;z-index:1;padding:0 8px;text-align:center}.node-index{width:62px;height:62px;display:grid;place-items:center;margin:0 auto 20px;border:1px solid var(--line-hot);border-radius:16px;background:var(--panel-solid);box-shadow:0 0 30px rgba(24,199,255,.08);font-family:var(--mono);font-size:11px;color:var(--cyan-soft);transform:rotate(45deg)}.node-index span{transform:rotate(-45deg)}.node h3{font-family:var(--display);font-weight:400;font-size:11px;letter-spacing:.08em;margin:0 0 8px}.node p{font-size:12px;color:var(--muted);margin:0}
+    .principle{margin-top:58px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:22px;padding:20px 24px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(90deg,rgba(24,199,255,.06),rgba(157,108,255,.035))}.principle-code{font-family:var(--mono);font-size:10px;color:var(--cyan)}.principle p{margin:0;color:var(--soft)}.principle strong{color:#fff}.principle-state{font-family:var(--mono);font-size:9px;color:var(--green);white-space:nowrap}
+    .modes{background:linear-gradient(180deg,transparent,rgba(8,19,30,.64),transparent)}
+    .mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .mode-card{position:relative;min-height:360px;padding:30px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(150deg,rgba(12,25,38,.8),rgba(5,12,20,.76));overflow:hidden;transition:transform .25s ease,border-color .25s ease}.mode-card:hover{transform:translateY(-6px);border-color:rgba(24,199,255,.38)}.mode-number{font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:.14em}.mode-card h3{font-family:var(--display);font-weight:400;font-size:1.45rem;letter-spacing:.06em;margin:50px 0 12px}.mode-card>p{color:var(--muted);font-size:14px;min-height:70px}.mode-card ul{list-style:none;padding:0;margin:28px 0 0;display:grid;gap:12px;font-family:var(--mono);font-size:10px;color:var(--soft)}.mode-card li{display:flex;gap:10px}.mode-card li::before{content:"+";color:var(--green)}.mode-card.lonewolf{border-color:rgba(157,108,255,.28)}.mode-card.lonewolf .mode-number{color:#c7abff}
+    .feature-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+    .feature{grid-column:span 4;position:relative;min-height:250px;padding:26px;border:1px solid var(--line);border-radius:14px;background:rgba(8,18,29,.7);overflow:hidden}.feature.wide{grid-column:span 7}.feature.narrow{grid-column:span 5}.feature-tag{font-family:var(--mono);font-size:9px;letter-spacing:.13em;color:var(--cyan);text-transform:uppercase}.feature h3{font-family:var(--display);font-weight:400;font-size:17px;margin:38px 0 12px}.feature p{font-size:13px;color:var(--muted);margin:0;max-width:44ch}.feature .metric{position:absolute;right:24px;top:23px;font-family:var(--mono);font-size:9px;color:var(--green)}
+    .fail-closed{display:grid;grid-template-columns:.9fr 1.1fr;gap:64px;align-items:center}
+    .fail-copy h2{font-family:var(--display);font-weight:400;font-size:clamp(2.3rem,4.5vw,4.4rem);line-height:1.06;letter-spacing:-.035em;margin:18px 0 24px}.fail-copy p{color:var(--muted);max-width:580px}.rule{margin-top:28px;padding:18px 20px;border-left:2px solid var(--red);background:linear-gradient(90deg,rgba(255,80,102,.08),transparent);font-family:var(--mono);font-size:11px;color:var(--soft)}.rule strong{color:#fff}
+    .gate{border:1px solid var(--line);border-radius:16px;padding:26px;background:linear-gradient(155deg,rgba(10,23,35,.86),rgba(5,11,18,.9));box-shadow:var(--shadow)}.gate-row{display:grid;grid-template-columns:124px 1fr 70px;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid rgba(120,183,220,.1);font-family:var(--mono);font-size:10px}.gate-row:last-child{border:0}.gate-name{color:var(--soft)}.gate-line{height:3px;border-radius:99px;background:linear-gradient(90deg,var(--cyan),var(--violet));box-shadow:0 0 13px rgba(24,199,255,.26)}.gate-state{text-align:right;color:var(--green)}.gate-row.block .gate-line{background:var(--red);box-shadow:0 0 13px rgba(255,80,102,.22)}.gate-row.block .gate-state{color:var(--red)}
+    .screen-section{padding-top:72px}
+    .screen-frame{position:relative;padding:12px;border:1px solid rgba(120,183,220,.24);border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.012));box-shadow:0 45px 110px rgba(0,0,0,.48),0 0 80px rgba(24,199,255,.055)}.screen-frame::before{content:"LIVE SYSTEM / PH4NTXM";position:absolute;left:24px;top:-32px;font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--cyan)}.screen-frame img{width:100%;height:auto;border-radius:10px;border:1px solid rgba(255,255,255,.06)}
+    .screen-caption{display:flex;justify-content:space-between;gap:24px;margin-top:18px;color:var(--muted);font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.09em}
+    .nuke{position:relative;background:radial-gradient(circle at 82% 50%,rgba(157,108,255,.09),transparent 26rem)}
+    .nuke-grid{display:grid;grid-template-columns:.82fr 1.18fr;gap:70px;align-items:center}.nuke h2{font-family:var(--display);font-weight:400;font-size:clamp(2.3rem,4.3vw,4.1rem);line-height:1.08;margin:16px 0 22px}.nuke-copy p{color:var(--muted)}.sequence{display:grid;gap:10px}.sequence-step{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:16px;padding:18px;border:1px solid var(--line);border-radius:12px;background:rgba(8,18,29,.72)}.sequence-step .num{width:34px;height:34px;display:grid;place-items:center;border-radius:9px;background:rgba(24,199,255,.08);color:var(--cyan);font-family:var(--mono);font-size:10px}.sequence-step strong{font-family:var(--display);font-size:11px;font-weight:400;letter-spacing:.06em}.sequence-step p{margin:3px 0 0;font-size:11px;color:var(--muted)}.sequence-step .done{font-family:var(--mono);font-size:8px;color:var(--green)}
+    .truth{padding:34px;border:1px solid rgba(255,195,77,.2);border-radius:14px;background:linear-gradient(110deg,rgba(255,195,77,.045),rgba(8,18,29,.6));display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:start}.truth-mark{width:42px;height:42px;display:grid;place-items:center;border:1px solid rgba(255,195,77,.35);border-radius:50%;color:var(--amber);font-family:var(--mono)}.truth h3{font-family:var(--display);font-weight:400;font-size:14px;letter-spacing:.05em;margin:0 0 10px}.truth p{color:var(--muted);margin:0;font-size:13px}
+    .source-card{position:relative;display:grid;grid-template-columns:1.25fr .75fr;gap:50px;padding:56px;border:1px solid rgba(24,199,255,.24);border-radius:20px;background:linear-gradient(135deg,rgba(10,24,38,.92),rgba(8,14,25,.9));overflow:hidden;box-shadow:var(--shadow)}.source-card h2{font-family:var(--display);font-size:clamp(2rem,4vw,3.8rem);font-weight:400;line-height:1.08;margin:15px 0 20px}.source-card p{color:var(--muted);max-width:620px}.source-facts{position:relative;z-index:1;display:grid;align-content:center;gap:12px}.fact{display:flex;justify-content:space-between;gap:20px;padding:14px 0;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:10px}.fact span:first-child{color:var(--muted)}.fact span:last-child{color:var(--soft);text-align:right}
+    footer{padding:42px 0 54px;border-top:1px solid var(--line);color:var(--muted)}.footer-grid{display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center}.footer-brand{display:flex;align-items:center;gap:14px}.footer-brand img{width:44px;height:44px;object-fit:contain;opacity:.85}.footer-brand strong{display:block;font-family:var(--display);font-weight:400;font-size:12px;letter-spacing:.14em;color:var(--soft)}.footer-brand small{font-family:var(--mono);font-size:9px}.footer-links{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:20px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase}.footer-links a:hover{color:var(--cyan)}.legal{margin-top:30px;padding-top:20px;border-top:1px solid rgba(120,183,220,.08);font-size:11px;display:flex;justify-content:space-between;gap:24px}.legal p{margin:0;max-width:760px}
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}.reveal.visible{opacity:1;transform:none}
+    @media(max-width:980px){.hero{grid-template-columns:1fr;gap:52px;padding-top:66px}.hero-copy{max-width:760px}.cockpit{width:min(620px,100%)}.section-head,.fail-closed,.nuke-grid,.source-card{grid-template-columns:1fr}.chain{grid-template-columns:repeat(3,1fr);row-gap:38px}.chain::before{display:none}.mode-grid{grid-template-columns:1fr}.mode-card{min-height:auto}.mode-card>p{min-height:auto}.feature{grid-column:span 6}.feature.wide,.feature.narrow{grid-column:span 6}.source-facts{max-width:560px}.screen-caption{flex-direction:column;gap:6px}}
+    @media(max-width:720px){.shell{width:min(100% - 28px,1180px)}.nav{height:66px}.menu-toggle{display:block}.nav-links{display:none;position:absolute;left:14px;right:14px;top:72px;flex-direction:column;align-items:stretch;gap:2px;padding:12px;border:1px solid var(--line);border-radius:12px;background:rgba(5,12,20,.98);box-shadow:var(--shadow)}.nav-links.open{display:flex}.nav-links a{padding:12px}.nav-cta{justify-content:center}.hero{min-height:auto;padding:64px 0 68px}.hero h1{font-size:clamp(3rem,17vw,5rem)}.hero-meta{gap:12px 20px}.terminal{transform:none}.terminal-body{padding:18px}.section-head{gap:20px}.chain{grid-template-columns:1fr 1fr}.principle{grid-template-columns:1fr}.principle-state{text-align:left}.feature{grid-column:1/-1!important;min-height:220px}.fail-closed,.nuke-grid{gap:42px}.gate-row{grid-template-columns:96px 1fr 56px}.source-card{padding:30px}.footer-grid,.legal{grid-template-columns:1fr;display:grid}.footer-links{justify-content:flex-start}.sequence-step{grid-template-columns:38px 1fr}.sequence-step .done{grid-column:2}.screen-frame{padding:7px}section{padding:82px 0}}
+    @media(max-width:460px){.wordmark span{display:none}.chain{grid-template-columns:1fr}.mode-switch{grid-template-columns:1fr}.pilot-head{align-items:flex-start}.mode-value{display:none}.gate-row{grid-template-columns:1fr auto}.gate-line{grid-column:1/-1;grid-row:2}.truth{grid-template-columns:1fr}.source-card{padding:25px}.actions{flex-direction:column}.btn{width:100%}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.strip-track{animation:none}.reveal{opacity:1;transform:none;transition:none}.btn,.mode-card{transition:none}}
+
+    /* Interactive Boot Pilot — local illustration, never a system control. */
+    :focus-visible{outline:2px solid var(--cyan-soft);outline-offset:5px}
+    .preview-badge{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted);white-space:nowrap}
+    .terminal{--pilot-accent:var(--cyan);transition:border-color .3s,box-shadow .3s}
+    .terminal[data-preview-mode="WINDOWS"]{--pilot-accent:#75ddff}
+    .terminal[data-preview-mode="LONEWOLF"]{--pilot-accent:#c7abff;border-color:rgba(157,108,255,.5)}
+    .mode-switch button{min-height:44px;font-size:12px}
+    .mode-switch button.active{color:var(--pilot-accent)}
+    .check{font-size:12px}.active-state{font-size:11px}
+    .pilot-state small{font-size:11px}.pilot-state strong{font-size:14px}
+    .pilot-state .orb{flex-shrink:0;width:26px;height:26px;transition:background .3s,box-shadow .3s}
+    .mode-story{margin-top:20px;padding:18px 0 0;border-top:1px solid var(--line)}
+    .mode-story .feature-tag{color:var(--pilot-accent);font-size:11px}
+    .mode-story p{font-size:14px;line-height:1.65;color:var(--soft);margin:8px 0 16px;min-height:4.95em}
+    .traffic-preview{display:flex;align-items:center;gap:12px;color:var(--pilot-accent);font-family:var(--mono);font-size:10px;letter-spacing:.07em}
+    .traffic-line{position:relative;flex:1;height:2px;background:var(--line-hot);overflow:hidden}
+    .traffic-line i{position:absolute;inset:0 auto 0 -24px;width:24px;background:var(--pilot-accent);box-shadow:0 0 12px var(--pilot-accent);animation:traffic-flow 2.4s linear infinite}
+    @keyframes traffic-flow{to{left:100%}}
+    .preview-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px}
+    .preview-controls button{display:flex;justify-content:space-between;gap:16px;align-items:center;min-height:46px;padding:10px 14px;border:1px solid rgba(255,80,102,.4);border-radius:8px;background:rgba(255,80,102,.06);color:var(--text);font-family:var(--mono);font-size:12px;cursor:pointer}
+    .preview-controls button:hover{background:rgba(255,80,102,.14);border-color:var(--red)}
+    #connectionState{font-family:var(--mono);font-size:10px;color:var(--green);text-align:right}
+    .terminal-foot{font-size:11px;letter-spacing:0;text-transform:none;line-height:1.6}
+    .terminal.is-locked{border-color:rgba(255,80,102,.65);box-shadow:var(--shadow),0 0 35px rgba(255,80,102,.08)}
+    .is-locked .orb{background:var(--red);box-shadow:0 0 0 8px rgba(255,80,102,.07),0 0 26px rgba(255,80,102,.25)}
+    .is-locked #pilotStatus,.is-locked #routeState,.is-locked #connectionState,.is-locked .traffic-preview{color:var(--red)}
+    .is-locked .traffic-line{background:rgba(255,80,102,.35)}
+    .is-locked .traffic-line i{animation-play-state:paused;visibility:hidden}
+    .preview-note{font-size:12px;color:var(--muted)}
+    .reveal{opacity:1;transform:none}
+    .motion-ready .reveal{opacity:0;transform:translateY(18px)}
+    .motion-ready .reveal.visible{opacity:1;transform:none}
+    @media(max-width:620px){.hero{gap:40px}.terminal-bar{gap:12px;padding-inline:14px}.preview-badge{font-size:9px}.terminal-title{font-size:9px}.pilot-head{flex-wrap:wrap;gap:16px}.mode-story p{min-height:0}}
+    @media(max-width:460px){.mode-switch{grid-template-columns:repeat(3,minmax(0,1fr))}.mode-switch button{font-size:10px;padding-inline:2px}.preview-controls{flex-wrap:wrap}.preview-controls button{flex:1}.pilot-state strong{font-size:13px}}
+    @media(prefers-reduced-motion:reduce){.traffic-line i{animation:none;left:45%}.terminal,.pilot-state .orb{transition:none}.motion-ready .reveal{opacity:1;transform:none}}
+
+    /* Pilot light, depth and tactile controls. */
+    #pilotPreview{border-radius:20px;background:radial-gradient(ellipse at var(--light-x,50%) var(--light-y,0%),color-mix(in srgb,var(--pilot-accent) 12%,transparent),transparent 60%),linear-gradient(155deg,#0b1b2a,#050c16 80%);box-shadow:0 35px 90px #0008,0 0 45px color-mix(in srgb,var(--pilot-accent) 10%,transparent),inset 0 1px 0 #ffffff15;transform:none;transition:transform .25s ease-out,border-color .35s,box-shadow .35s}
+    #pilotPreview::before{content:"";position:absolute;left:20%;right:20%;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--pilot-accent),transparent);box-shadow:0 0 20px var(--pilot-accent);pointer-events:none}
+    #pilotPreview .terminal-bar{background:#030a1280;height:54px}
+    .preview-badge{display:flex;align-items:center;gap:7px;font-size:9px}
+    .preview-badge::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--pilot-accent);box-shadow:0 0 9px var(--pilot-accent)}
+    #pilotPreview .mode-switch{position:relative;gap:6px;padding:6px;border-radius:12px;background:#02060c80}
+    #pilotPreview .mode-switch button{transition:color .25s,background .25s,box-shadow .25s,transform .2s;border:1px solid transparent;border-radius:8px}
+    #pilotPreview .mode-switch button:hover{color:white;background:#ffffff08;transform:translateY(-1px)}
+    #pilotPreview .mode-switch button.active{background:color-mix(in srgb,var(--pilot-accent) 11%,transparent);border-color:color-mix(in srgb,var(--pilot-accent) 35%,transparent);box-shadow:0 0 20px color-mix(in srgb,var(--pilot-accent) 8%,transparent)}
+    #pilotPreview .pilot-head{padding:8px 4px;margin:22px 0 14px}
+    #pilotPreview .orb{position:relative;width:30px;height:30px;margin:5px 10px 5px 4px}
+    #pilotPreview .orb::before,#pilotPreview .orb::after{content:"";position:absolute;inset:-8px;border:1px solid #47e39860;border-radius:50%;pointer-events:none}
+    #pilotPreview .orb::after{inset:-14px;border-color:#47e39820;animation:pilot-breathe 3.5s ease-in-out infinite}
+    @keyframes pilot-breathe{50%{transform:scale(1.15);opacity:.3}}
+    #pilotPreview .checks{gap:5px}
+    #pilotPreview .check{width:100%;text-align:left;color:var(--soft);background:#ffffff02;border:1px solid transparent;border-radius:7px;padding:10px 11px;min-height:42px;cursor:pointer;transition:background .2s,border-color .2s,transform .2s;font-size:12px}
+    #pilotPreview .check:hover,#pilotPreview .check[aria-pressed="true"]{background:color-mix(in srgb,var(--pilot-accent) 6%,transparent);border-color:color-mix(in srgb,var(--pilot-accent) 22%,transparent)}
+    #pilotPreview .check:hover{transform:translateX(2px)}
+    .check-insight{border-left:2px solid var(--pilot-accent);padding:2px 0 2px 12px;min-height:3.2em;font-size:12px;line-height:1.6;color:var(--muted);margin:14px 0 0}
+    #pilotPreview .mode-story{margin-top:14px;padding-top:14px}
+    #pilotPreview .mode-story p{margin-bottom:14px;min-height:4.95em}
+    #pilotPreview .traffic-preview{padding:14px 12px;border:1px solid var(--line);border-radius:9px;background:#02070d70}
+    #pilotPreview .traffic-line{height:3px;border-radius:5px}
+    #pilotPreview .traffic-line i{width:36px;animation-duration:1.8s}
+    #pilotPreview[data-preview-mode="LONEWOLF"] .traffic-line i{animation-duration:3s}
+    #pilotPreview .preview-controls button{position:relative;overflow:hidden;transition:background .2s,box-shadow .2s,transform .2s}
+    #pilotPreview .preview-controls button:hover{box-shadow:0 0 22px #ff50661a;transform:translateY(-2px)}
+    #pilotPreview .preview-controls button:active{transform:scale(.97)}
+    #pilotPreview.is-locked{--pilot-accent:var(--red);border-color:#ff506680;box-shadow:0 35px 90px #0008,0 0 50px #ff506612}
+    #pilotPreview.is-locked .orb::before,#pilotPreview.is-locked .orb::after{border-color:#ff506650;animation:none}
+    #pilotPreview.is-locked .traffic-line::after{content:"";position:absolute;left:50%;top:-5px;width:2px;height:13px;background:var(--red);box-shadow:0 0 10px var(--red)}
+    #pilotPreview.is-locked .traffic-line{overflow:visible}
+    #pilotPreview .terminal-foot{gap:12px;align-items:center;font-size:10px;margin-top:16px;padding-top:12px}
+    #motionToggle{flex-shrink:0;background:none;border:1px solid var(--line);border-radius:6px;padding:8px;color:var(--soft);font-family:var(--mono);font-size:10px;cursor:pointer;min-height:36px}
+    #motionToggle:hover{border-color:var(--pilot-accent)}
+    #pilotPreview.effects-paused *,#pilotPreview.effects-paused *::after{animation-play-state:paused!important}
+    #pilotPreview.effects-paused{transform:none;transition:none}
+    @media(hover:none),(pointer:coarse){#pilotPreview{transform:none}}
+    @media(max-width:620px){#pilotPreview .terminal-body{padding:16px}#pilotPreview .mode-story p{min-height:0}#pilotPreview .terminal-foot{flex-wrap:wrap}.check-insight{min-height:4.8em}}
+    @media(prefers-reduced-motion:reduce){#pilotPreview{transform:none}#pilotPreview *,#pilotPreview *::after{animation:none!important;transition:none!important}}
+
+    /* Responsive card edges: quiet at rest, illuminated on interaction. */
+    :is(.feature,.mode-card,.source-card,.gate,.sequence-step,.truth,.principle,.screen-frame){position:relative;--edge-color:var(--cyan);transition:border-color .25s ease,box-shadow .25s ease,transform .25s ease}
+    .mode-card.lonewolf{--edge-color:var(--violet)}
+    .truth{--edge-color:var(--amber)}
+    :is(.feature,.mode-card,.source-card,.gate,.sequence-step,.truth,.principle,.screen-frame)::after{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:radial-gradient(180px circle at var(--edge-x,50%) var(--edge-y,50%),var(--edge-color),transparent 80%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;pointer-events:none;opacity:0;transition:opacity .25s ease;z-index:2}
+    @media(hover:hover) and (pointer:fine){
+      :is(.feature,.mode-card,.source-card,.gate,.sequence-step,.truth,.principle,.screen-frame):hover{border-color:rgba(120,183,220,.38);box-shadow:0 12px 32px #0003}
+      :is(.feature,.mode-card,.sequence-step):hover{transform:translateY(-3px)}
+      :is(.feature,.mode-card,.source-card,.gate,.sequence-step,.truth,.principle,.screen-frame):hover::after{opacity:1}
+      .feature:hover h3,.mode-card:hover h3{color:var(--cyan-soft)}
+      .mode-card.lonewolf:hover h3{color:#c7abff}
+    }
+    :is(.feature,.mode-card,.source-card,.gate,.sequence-step,.truth,.principle,.screen-frame):focus-within{border-color:var(--edge-color)}
+    :is(.feature,.mode-card,.source-card,.gate,.sequence-step,.truth,.principle,.screen-frame).card-touch{border-color:var(--edge-color);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--edge-color) 20%,transparent)}
+    :is(.feature,.mode-card,.source-card,.gate,.sequence-step,.truth,.principle,.screen-frame).card-touch::after{opacity:1}
+    .feature h3,.mode-card h3{transition:color .25s ease}
+    @media(prefers-reduced-motion:reduce){
+      :is(.feature,.mode-card,.source-card,.gate,.sequence-step,.truth,.principle,.screen-frame),:is(.feature,.mode-card,.source-card,.gate,.sequence-step,.truth,.principle,.screen-frame)::after,.feature h3,.mode-card h3{transition:none}
+      :is(.feature,.mode-card,.sequence-step):hover{transform:none}
+    }
+
+    /* Short explanations appear on demand, leaving the page uncluttered. */
+    .holo-enabled{cursor:pointer}
+    .holo-open{display:inline-grid;place-items:center;width:36px;height:36px;min-height:36px;margin-top:16px;padding:0;border:1px solid rgba(117,221,255,.25);border-radius:5px;background:rgba(117,221,255,.025);color:var(--cyan-soft);cursor:pointer;transition:background .2s,border-color .2s,box-shadow .2s,transform .2s}
+    .holo-open::after{content:"+";font-family:var(--mono);font-size:20px;font-weight:400;line-height:1;transition:color .2s}
+    .holo-open:hover{color:#e8faff;border-color:rgba(117,221,255,.55);background:linear-gradient(135deg,rgba(117,221,255,.13),rgba(117,221,255,.04));box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 4px 16px rgba(0,0,0,.15)}.holo-open:hover::after{color:#fff}.holo-open:active{transform:translateY(1px);box-shadow:none}.holo-open:focus-visible{outline:2px solid var(--cyan-soft);outline-offset:4px}
+    .node .holo-open{margin-top:10px}.node.holo-enabled:hover .node-index{border-color:var(--cyan-soft);box-shadow:0 0 24px #18c7ff25}
+    .sequence-step>.holo-open{grid-column:2/-1;margin-top:0;justify-self:start}
+    .principle>.holo-open,.truth>.holo-open,.source-card>.holo-open{grid-column:1/-1;margin-top:0;justify-self:start}
+    .screen-frame>.holo-open{margin:8px 10px 0}
+    #holoDialog{--holo-color:var(--cyan-soft);color:var(--text);width:min(520px,calc(100% - 32px));max-height:calc(100dvh - 40px);padding:0;border:1px solid #75ddff66;border-radius:16px;background:linear-gradient(145deg,#0a1c2af5,#050c16fc);box-shadow:0 32px 110px #000a,0 0 40px #18c7ff14;overflow:auto;overscroll-behavior:contain}
+    #holoDialog::backdrop{background:#010710bd;backdrop-filter:blur(8px)}
+    #holoDialog[open]{animation:holo-arrive .38s cubic-bezier(.2,.75,.25,1) both}
+    #holoDialog[open]::backdrop{animation:holo-backdrop .25s ease-out both}
+    .holo-shell{position:relative;padding:28px;isolation:isolate;overflow:hidden}
+    .holo-shell::before{content:"";position:absolute;inset:0;z-index:-1;background:repeating-linear-gradient(0deg,transparent,transparent 5px,#75ddff04 5px,#75ddff04 6px);pointer-events:none}
+    .holo-shell::after{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,var(--holo-color),transparent);box-shadow:0 0 16px var(--holo-color);animation:holo-scan .9s ease-out both;pointer-events:none}
+    .holo-top{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:30px}
+    .holo-kicker{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--holo-color)}
+    .holo-close{display:grid;place-items:center;flex-shrink:0;width:44px;height:44px;border:1px solid var(--line-hot);border-radius:8px;background:#18c7ff08;color:var(--text);font-size:24px;cursor:pointer}
+    .holo-close:hover{background:#18c7ff18;border-color:var(--cyan-soft)}
+    #holoTitle{font-family:var(--display);font-size:clamp(20px,4vw,27px);font-weight:400;line-height:1.4;margin:0 0 18px;text-wrap:balance}
+    #holoBody{font-size:16px;line-height:1.8;color:var(--soft);margin:0}
+    .holo-footer{display:flex;gap:10px;align-items:center;margin-top:28px;padding-top:18px;border-top:1px solid var(--line);font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--muted)}
+    .holo-footer::before{content:"";height:5px;width:5px;background:var(--holo-color);box-shadow:0 0 8px var(--holo-color)}
+    html.holo-visible{overflow:hidden}
+    @keyframes holo-arrive{from{opacity:0;transform:translateY(16px) scale(.97);clip-path:inset(45% 0 round 16px)}to{opacity:1;transform:none;clip-path:inset(0 round 16px)}}
+    @keyframes holo-backdrop{from{opacity:0}to{opacity:1}}
+    @keyframes holo-scan{from{top:0;opacity:.8}to{top:100%;opacity:0}}
+    #holoDialog.holo-still,#holoDialog.holo-still::backdrop,#holoDialog.holo-still .holo-shell::after{animation:none}
+    @media(max-width:620px){.holo-shell{padding:22px}.holo-top{margin-bottom:22px}.holo-open{width:44px;height:44px;min-height:44px}}
+    @media(prefers-reduced-motion:reduce){#holoDialog[open],#holoDialog[open]::backdrop,.holo-shell::after{animation:none}.holo-open,.holo-open::after{transition:none}.holo-open:hover::after,.holo-open:active{transform:none}}
+
+    /* Quiet holographic information trigger. */
+    .holo-open{position:relative;isolation:isolate;width:36px;height:36px;min-height:36px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;color:rgba(117,221,255,.78);transition:color .25s,filter .25s}
+    .holo-open::before{content:"";position:absolute;inset:7px;pointer-events:none;background:linear-gradient(currentColor,currentColor) left top/6px 1px no-repeat,linear-gradient(currentColor,currentColor) left top/1px 6px no-repeat,linear-gradient(currentColor,currentColor) right bottom/6px 1px no-repeat,linear-gradient(currentColor,currentColor) right bottom/1px 6px no-repeat;opacity:.55;filter:drop-shadow(0 0 3px #18c7ff70);transition:opacity .25s,filter .25s}
+    .holo-open::after{content:"+";position:relative;font-family:var(--mono);font-size:17px;font-weight:400;line-height:1;text-shadow:0 0 7px #18c7ff80;transition:text-shadow .25s,color .25s}
+    .holo-open:hover,.holo-open:focus-visible{background:transparent;box-shadow:none;color:#b8edff;filter:drop-shadow(0 0 5px #18c7ff35)}
+    .holo-open:hover::before,.holo-open:focus-visible::before{opacity:1;filter:drop-shadow(0 0 4px #18c7ffb0)}
+    .holo-open:hover::after,.holo-open:focus-visible::after{color:#d9f6ff;transform:none;text-shadow:0 0 9px #18c7ffb0,0 0 16px #18c7ff50}
+    .holo-open:active{transform:none;color:#fff;filter:drop-shadow(0 0 7px #18c7ff80)}
+    @media(pointer:coarse){.holo-open{width:44px;height:44px;min-height:44px}.holo-open::before{inset:11px}}
+    @media(prefers-reduced-motion:reduce){.holo-open,.holo-open::before,.holo-open::after{transition:none}}
+    :root{color-scheme:dark}
+    .nav{gap:20px}
+    .wordmark{order:0;flex-shrink:0}
+    .nav-links{order:1;margin-left:auto}
+    .theme-switch{order:2;display:flex;flex-shrink:0;gap:3px;padding:3px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}
+    .theme-switch button{min-height:38px;padding:8px 11px;border:1px solid transparent;border-radius:6px;background:transparent;color:var(--soft);font-family:var(--mono);font-size:12px;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+    .theme-switch button:hover{color:var(--text);border-color:var(--line-hot)}
+    .theme-switch button[aria-pressed="true"]{color:var(--cyan-soft);background:rgba(24,199,255,.1);border-color:var(--line-hot)}
+    .menu-toggle{order:3}
+    html[data-theme="ghost"]{
+      color-scheme:light;
+      --bg:#f3f7fb;
+      --bg-soft:#e9f1f7;
+      --panel:rgba(255,255,255,.86);
+      --panel-solid:#f9fcff;
+      --line:rgba(35,83,112,.19);
+      --line-hot:rgba(0,139,204,.55);
+      --text:#102b40;
+      --soft:#36566f;
+      --muted:#506c81;
+      --cyan:#007cae;
+      --cyan-soft:#006d9c;
+      --violet:#a22ea7;
+      --magenta:#ff3dfb;
+      --green:#14764d;
+      --red:#b72f49;
+      --amber:#8b6011;
+      --shadow:0 24px 80px rgba(21,56,82,.13);
+    }
+    html[data-theme="ghost"] body::before{background:radial-gradient(circle at var(--mx,72%) var(--my,10%),rgba(0,171,255,.11),transparent 23rem),radial-gradient(circle at 10% 54%,rgba(255,61,251,.045),transparent 28rem),linear-gradient(180deg,#f7fbfe 0%,#eaf2f8 48%,#f5f9fc 100%)}
+    html[data-theme="ghost"] body::after{background-image:linear-gradient(rgba(16,62,94,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(16,62,94,.04) 1px,transparent 1px)}
+    html[data-theme="ghost"] ::selection{background:#b5e7ff;color:#102b40}
+    html[data-theme="ghost"] .progress{background:linear-gradient(90deg,#00abff,#ff3dfb)}
+    html[data-theme="ghost"] .nav-wrap{background:rgba(246,251,255,.84);border-bottom-color:var(--line)}
+    html[data-theme="ghost"] .wordmark span{background:linear-gradient(90deg,#102b40 5%,#007cae);background-clip:text}
+    html[data-theme="ghost"] .nav-cta{color:var(--text)!important;background:rgba(0,171,255,.055)}
+    html[data-theme="ghost"] .menu-toggle{color:var(--text)}
+    html[data-theme="ghost"] .hero h1 .ghost{-webkit-text-stroke-color:rgba(24,75,110,.65)}
+    html[data-theme="ghost"] .hero h1 .hot{background:linear-gradient(92deg,#102b40 2%,#007ea9 56%,#9c359e 100%);background-clip:text;text-shadow:0 0 44px rgba(0,171,255,.07)}
+    html[data-theme="ghost"] :is(.hero-copy strong,.principle strong,.rule strong){color:var(--text)}
+    html[data-theme="ghost"] .btn-primary{background:linear-gradient(110deg,rgba(0,171,255,.14),rgba(255,61,251,.065));border-color:rgba(0,139,204,.5);box-shadow:0 14px 44px rgba(0,171,255,.07)}
+    html[data-theme="ghost"] .btn-quiet{background:rgba(255,255,255,.65)}
+    html[data-theme="ghost"] .terminal{background:linear-gradient(160deg,#faffff,#edf5fb);border-color:var(--line)}
+    html[data-theme="ghost"] .terminal::after{background:linear-gradient(rgba(28,75,108,.025) 50%,transparent 50%);background-size:100% 4px}
+    html[data-theme="ghost"] #pilotPreview{background:radial-gradient(ellipse at var(--light-x,50%) var(--light-y,0%),color-mix(in srgb,var(--pilot-accent) 10%,transparent),transparent 60%),linear-gradient(155deg,#faffff,#edf4fa 80%);box-shadow:0 35px 90px #16364d20,0 0 45px color-mix(in srgb,var(--pilot-accent) 7%,transparent),inset 0 1px 0 #fff}
+    html[data-theme="ghost"] .terminal[data-preview-mode="WINDOWS"]{--pilot-accent:#0076a1}
+    html[data-theme="ghost"] .terminal[data-preview-mode="LONEWOLF"]{--pilot-accent:#a22ea7;border-color:rgba(162,46,167,.4)}
+    html[data-theme="ghost"] #pilotPreview .terminal-bar{background:#ffffff80}
+    html[data-theme="ghost"] :is(.mode-switch,#pilotPreview .mode-switch){background:#dcebf580}
+    html[data-theme="ghost"] #pilotPreview .mode-switch button:hover{color:var(--text);background:#ffffff90}
+    html[data-theme="ghost"] .mode-switch button.active{color:var(--pilot-accent)}
+    html[data-theme="ghost"] #pilotPreview .check{background:#ffffff35}
+    html[data-theme="ghost"] #pilotPreview .check:hover,html[data-theme="ghost"] #pilotPreview .check[aria-pressed="true"]{background:color-mix(in srgb,var(--pilot-accent) 7%,white)}
+    html[data-theme="ghost"] #pilotPreview .traffic-preview{background:#ffffff80}
+    html[data-theme="ghost"] #pilotPreview.is-locked{--pilot-accent:var(--red);border-color:#b72f4980;box-shadow:0 35px 90px #16364d20,0 0 50px #b72f4910}
+    html[data-theme="ghost"] .strip{background:#e7f0f880}
+    html[data-theme="ghost"] .principle{background:linear-gradient(90deg,rgba(0,171,255,.065),rgba(255,61,251,.025))}
+    html[data-theme="ghost"] .modes{background:linear-gradient(180deg,transparent,rgba(220,235,247,.5),transparent)}
+    html[data-theme="ghost"] .mode-card{background:linear-gradient(150deg,rgba(255,255,255,.92),rgba(240,247,252,.88))}
+    html[data-theme="ghost"] .mode-card.lonewolf{border-color:rgba(162,46,167,.25)}
+    html[data-theme="ghost"] .mode-card.lonewolf .mode-number,html[data-theme="ghost"] .mode-card.lonewolf:hover h3{color:#95269b}
+    html[data-theme="ghost"] .feature{background:rgba(255,255,255,.76)}
+    html[data-theme="ghost"] .gate{background:linear-gradient(155deg,#faffff,#e9f2f9)}
+    html[data-theme="ghost"] .screen-frame{background:linear-gradient(135deg,#ffffffc9,#e4eff780);box-shadow:0 35px 90px #16364d20,0 0 60px #00abff08}
+    html[data-theme="ghost"] .screen-frame img{border-color:var(--line)}
+    html[data-theme="ghost"] .nuke{background:radial-gradient(circle at 82% 50%,rgba(255,61,251,.035),transparent 26rem)}
+    html[data-theme="ghost"] .sequence-step{background:#ffffffbd}
+    html[data-theme="ghost"] .truth{background:linear-gradient(110deg,#fff8eabf,#f6faffd9);border-color:#a3772838}
+    html[data-theme="ghost"] .truth-mark{border-color:#a3772866}
+    html[data-theme="ghost"] .source-card{background:linear-gradient(135deg,#faffffeb,#e8f1fae6);border-color:var(--line-hot)}
+    html[data-theme="ghost"] .holo-open{color:var(--cyan-soft)}
+    html[data-theme="ghost"] .holo-open:hover,html[data-theme="ghost"] .holo-open:focus-visible,html[data-theme="ghost"] .holo-open:hover::after,html[data-theme="ghost"] .holo-open:focus-visible::after,html[data-theme="ghost"] .holo-open:active{color:#005d89}
+    html[data-theme="ghost"] #holoDialog{background:linear-gradient(145deg,#fafffffa,#edf5fcfc);border-color:var(--line-hot);box-shadow:0 32px 110px #16364d40,0 0 40px #00abff10}
+    html[data-theme="ghost"] #holoDialog::backdrop{background:#16364d66}
+    html[data-theme="ghost"] .holo-shell::before{background:repeating-linear-gradient(0deg,transparent,transparent 5px,#007cae05 5px,#007cae05 6px)}
+    @media(hover:hover) and (pointer:fine){html[data-theme="ghost"] :is(.feature,.mode-card,.source-card,.gate,.sequence-step,.truth,.principle,.screen-frame):hover{border-color:rgba(0,139,204,.4);box-shadow:0 12px 32px #16364d14}}
+    @media(max-width:980px){.nav{gap:14px}.wordmark{margin-right:auto}.menu-toggle{display:block}.nav-links{display:none;position:absolute;left:20px;right:20px;top:84px;flex-direction:column;align-items:stretch;gap:2px;margin-left:0;padding:12px;border:1px solid var(--line);border-radius:12px;background:rgba(5,12,20,.98);box-shadow:var(--shadow)}.nav-links.open{display:flex}.nav-links a{padding:12px}.nav-cta{justify-content:center}html[data-theme="ghost"] .nav-links{background:rgba(246,251,255,.98)}}
+    @media(max-width:720px){.nav-links{left:14px;right:14px;top:74px}.theme-switch button{min-height:38px;padding-inline:9px}.nav{gap:10px}}
+    @media(max-width:360px){.theme-switch button{padding-inline:7px}.menu-toggle{padding-inline:8px}.wordmark img{width:30px;height:30px}.nav{gap:7px}}
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="progress" aria-hidden="true"></div>
+  <a rel="me" href="https://defcon.social/@PH4NTXMOFFICIAL" hidden>Mastodon</a>
+
+  <div class="nav-wrap">
+    <nav class="nav shell" aria-label="Primary navigation">
+      <a class="wordmark" href="#top" aria-label="PH4NTXM home"><img src="ph4ntxm-logo.png" alt=""><span>PH4NTXM</span></a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="navLinks">MENU</button>
+      <div class="nav-links" id="navLinks">
+        <a href="#architecture">Architecture</a>
+        <a href="#modes">Modes</a>
+        <a href="#protection">Protection</a>
+        <a href="#nuke">Nuke</a>
+        <a class="nav-cta" href="https://github.com/PH4NTXMOFFICIAL/PH4NTXM" target="_blank" rel="noopener noreferrer">View source ↗</a>
+      </div>
+      <div class="theme-switch" role="group" aria-label="Website appearance">
+        <button type="button" data-site-theme="ghost" aria-pressed="false">Ghost</button>
+        <button type="button" data-site-theme="abyss" aria-pressed="true">Abyss</button>
+      </div>
+    </nav>
+  </div>
+
+  <main id="main">
+    <div id="top" class="shell hero">
+      <div class="hero-content reveal">
+        <div class="eyebrow">PH4NTXM · Adaptive Identity Live OS</div>
+        <h1><span class="ghost">A SESSION</span><span class="hot">WITHOUT A PAST.</span></h1>
+        <p class="hero-copy"><strong>PH4NTXM is a Linux Live Operating System with an embedded Adaptive Identity Engine.</strong> Every session is stateless, disposable, and non-reusable. Instead of changing isolated values, PH4NTXM builds one linked identity that stays consistent during the session.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="#architecture">Explore the system</a>
+          <a class="btn btn-quiet" href="https://github.com/PH4NTXMOFFICIAL/PH4NTXM" target="_blank" rel="noopener noreferrer">Build from source</a>
+        </div>
+        <div class="hero-meta">
+          <span><i></i>Debian / XFCE</span>
+          <span><i></i>64-bit system</span>
+          <span><i></i>Amnesic live session</span>
+          <span><i></i>GPLv3</span>
+        </div>
+      </div>
+
+      <div class="cockpit reveal" aria-label="PH4NTXM Boot Pilot concept">
+        <div class="terminal" id="pilotPreview" data-preview-mode="LINUX">
+          <div class="terminal-bar"><span class="terminal-title">PH4NTXM BOOT PILOT</span><span class="preview-badge">INTERACTIVE DEMO</span></div>
+          <div class="terminal-body">
+            <div class="mode-switch" role="group" aria-label="Preview boot modes">
+              <button type="button" class="active" aria-pressed="true" data-mode="LINUX">LINUX</button>
+              <button type="button" aria-pressed="false" data-mode="WINDOWS">WINDOWS</button>
+              <button type="button" aria-pressed="false" data-mode="LONEWOLF">LONEWOLF</button>
+            </div>
+            <div class="pilot-head" role="status" aria-live="polite" aria-atomic="true">
+              <div class="pilot-state"><span class="orb"></span><span><strong id="pilotStatus">PROTECTED</strong><small id="pilotSubtitle">all primary chains active</small></span></div>
+              <span class="mode-value">MODE <b id="modeValue">LINUX</b></span>
+            </div>
+            <div class="checks">
+              <button type="button" class="check" data-detail="identity" aria-pressed="false"><span>Identity chain</span><span class="active-state">ACTIVE</span></button>
+              <button type="button" class="check" data-detail="hardware" aria-pressed="false"><span>Hardware persona</span><span class="active-state">ACTIVE</span></button>
+              <button type="button" class="check" data-detail="browser" aria-pressed="false"><span id="browserName">Firefox ESR profile</span><span class="active-state">ACTIVE</span></button>
+              <button type="button" class="check" data-detail="network" aria-pressed="false"><span id="routeName">Packet transformation</span><span class="active-state" id="routeState">ACTIVE</span></button>
+              <button type="button" class="check" data-detail="firewall" aria-pressed="false"><span>Firewall protection</span><span class="active-state">ACTIVE</span></button>
+              <button type="button" class="check" data-detail="nuke" aria-pressed="false"><span>Nuke system</span><span class="active-state">ACTIVE</span></button>
+            </div>
+            <p class="check-insight" id="checkInsight" aria-live="polite">Explore a protection layer above.</p>
+            <div class="mode-story" aria-live="polite" aria-atomic="true">
+              <span class="feature-tag" id="profileLabel">LINUX PROFILE</span>
+              <p id="profileDescription">A Linux-aligned identity with Firefox ESR and protected direct connections.</p>
+              <div class="traffic-preview" aria-hidden="true"><span>SESSION</span><span class="traffic-line"><i></i></span><span id="trafficDestination">INTERNET</span></div>
+            </div>
+            <div class="preview-controls"><button type="button" id="lockdownDemo" aria-pressed="false" aria-describedby="demoNote">Try Lockdown <span aria-hidden="true">↗</span></button><span id="connectionState">NETWORK OPEN</span></div>
+            <div class="terminal-foot"><span id="demoNote">Demo only — your connection is unchanged.</span><button type="button" id="motionToggle" aria-pressed="false" aria-label="Pause preview effects">Pause effects</button></div>
+            <noscript><p class="preview-note">Enable JavaScript to explore the modes and Lockdown demo.</p></noscript>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="strip" aria-hidden="true"><div class="strip-track"><span>Linked identity</span><span>Traffic blocked on failure</span><span>Disposable live session</span><span>Tor-only Lonewolf</span><span>Every shutdown uses Nuke</span><span>Live system checks</span><span>Linked identity</span><span>Traffic blocked on failure</span><span>Disposable live session</span><span>Tor-only Lonewolf</span><span>Every shutdown uses Nuke</span><span>Live system checks</span></div></div>
+
+    <section id="architecture" class="architecture">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><div class="section-kicker">01 / Architecture</div><h2>One boot.<br>One linked identity.</h2></div>
+          <p>PH4NTXM does not generate every value separately. Each stage reuses values from the previous stages. This keeps the identity consistent across hardware, network, browser, screen, and clock.</p>
+        </div>
+        <div class="chain reveal">
+          <div class="node" data-hologram="node-0"><div class="node-index"><span>01</span></div><h3>MODE</h3><p>Selected at boot and fixed for the session.</p></div>
+          <div class="node" data-hologram="node-1"><div class="node-index"><span>02</span></div><h3>IDENTITY</h3><p>Session identity and device details.</p></div>
+          <div class="node" data-hologram="node-2"><div class="node-index"><span>03</span></div><h3>HARDWARE</h3><p>System, graphics, memory, and screen profile.</p></div>
+          <div class="node" data-hologram="node-3"><div class="node-index"><span>04</span></div><h3>NETWORK</h3><p>Network identity, packet transformation, and routing.</p></div>
+          <div class="node" data-hologram="node-4"><div class="node-index"><span>05</span></div><h3>SESSION</h3><p>Browser, time, system checks, and shutdown.</p></div>
+        </div>
+        <div class="principle reveal" data-hologram="principle-0"><span class="principle-code">SYSTEM_LIFECYCLE</span><p><strong>Boot → Identity → Enforcement → Operation → Nuke → Termination</strong></p><span class="principle-state">CHAIN LOCKED</span></div>
+      </div>
+    </section>
+
+    <section id="modes" class="modes">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><div class="section-kicker">02 / Boot modes</div><h2>Three modes.<br>Selected at boot.</h2></div>
+          <p>You choose LINUX, WINDOWS, or LONEWOLF from the boot menu. The selected mode stays fixed until the session ends.</p>
+        </div>
+        <div class="mode-grid">
+          <article class="mode-card reveal" data-hologram="mode-card-0"><div class="mode-number">MODE / 01</div><h3>LINUX</h3><p>Linux-aligned identity for the system, browser, and network.</p><ul><li>Linux hardware and identity profile</li><li>Encrypted domain name requests</li><li>Protected traffic before it leaves</li></ul></article>
+          <article class="mode-card reveal" data-hologram="mode-card-1"><div class="mode-number">MODE / 02</div><h3>WINDOWS</h3><p>Windows-aligned identity built from the same linked session values.</p><ul><li>Windows-aligned network behavior</li><li>Matching browser and hardware profile</li><li>Protected traffic before it leaves</li></ul></article>
+          <article class="mode-card lonewolf reveal" data-hologram="mode-card-2"><div class="mode-number">MODE / 03</div><h3>LONEWOLF</h3><p>Linux-based profile with its own session identity and system-wide Tor routing.</p><ul><li>Tor Browser and Tor-routed connections</li><li>Domain name requests go through Tor</li><li>Internet stays blocked if Tor fails</li></ul></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="protection">
+      <div class="shell">
+        <div class="section-head reveal">
+          <div><div class="section-kicker">03 / Main features</div><h2>Each part has a job.<br>All parts work together.</h2></div>
+          <p>Boot Pilot helps you get started. Health reports system status, while the OpSec Suite provides tools to inspect the session.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature wide reveal" data-hologram="feature-0"><span class="feature-tag">Identity engine</span><span class="metric">ONE SESSION</span><h3>LINKED IDENTITY</h3><p>System, hardware, browser, network, and clock follow one session profile. Newly connected network adapters receive a protected identity before use.</p></article>
+          <article class="feature narrow reveal" data-hologram="feature-1"><span class="feature-tag">Network protection</span><span class="metric">BLOCKS ON FAILURE</span><h3>PACKET TRANSFORMATION + FIREWALL</h3><p>Linux and Windows combine packet transformation, firewall protection, and checks at the network exit to prevent traffic from bypassing protection.</p></article>
+          <article class="feature reveal" data-hologram="feature-2"><span class="feature-tag">Domain names</span><span class="metric">PROTECTED</span><h3>ENCRYPTED DOMAIN REQUESTS</h3><p>Linux and Windows encrypt domain name requests. Lonewolf sends them only through Tor.</p></article>
+          <article class="feature reveal" data-hologram="feature-3"><span class="feature-tag">Live session</span><span class="metric">DISPOSABLE</span><h3>MEMORY + TIME</h3><p>Memory noise, time changes, and generated system values exist only for the active live session.</p></article>
+          <article class="feature reveal" data-hologram="feature-4"><span class="feature-tag">System state</span><span class="metric">SESSION STATUS</span><h3>PILOT + HEALTH</h3><p>Check protection, connect to Wi-Fi, and open your browser from Boot Pilot. Health provides a detailed view of the session.</p></article>
+          <article class="feature narrow reveal" data-hologram="feature-5"><span class="feature-tag">Browser</span><span class="metric">MODE-ALIGNED</span><h3>FIREFOX + TOR BROWSER</h3><p>Linux and Windows use Firefox ESR with the session profile. Lonewolf uses an isolated Tor Browser connected through system Tor.</p></article>
+          <article class="feature wide reveal" data-hologram="feature-6"><span class="feature-tag">Session controls</span><span class="metric">OPERATOR CONTROL</span><h3>LOCKDOWN + PANIC</h3><p>Lockdown cuts network access. Panic and armed USB storage removal end the session through the same Nuke sequence as normal shutdown.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="fail-section">
+      <div class="shell fail-closed">
+        <div class="fail-copy reveal"><div class="section-kicker">04 / Failure policy</div><h2>If protection is not ready, traffic stays blocked.</h2><p>Network access waits for the selected mode’s required protection checks. Your browser opens from Boot Pilot only after readiness is checked again.</p><div class="rule"><strong>LINUX / WINDOWS:</strong> no packet transformation → DROP<br><strong>LONEWOLF:</strong> no Tor connection → DROP</div></div>
+        <div class="gate reveal" data-hologram="gate-0" aria-label="Network protection path diagram">
+          <div class="gate-row"><span class="gate-name">IDENTITY</span><span class="gate-line"></span><span class="gate-state">READY</span></div>
+          <div class="gate-row"><span class="gate-name">FIREWALL</span><span class="gate-line"></span><span class="gate-state">READY</span></div>
+          <div class="gate-row"><span class="gate-name">TRAFFIC PATH</span><span class="gate-line"></span><span class="gate-state">READY</span></div>
+          <div class="gate-row"><span class="gate-name">NAME LOOKUP</span><span class="gate-line"></span><span class="gate-state">READY</span></div>
+          <div class="gate-row block"><span class="gate-name">BYPASS</span><span class="gate-line"></span><span class="gate-state">DENIED</span></div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <section class="screen-section">
+      <div class="shell">
+        <div class="screen-frame reveal" data-hologram="screen-frame-0"><img id="desktopPreview" src="abyss.png" width="1280" height="800" loading="lazy" decoding="async" alt="PH4NTXM Abyss desktop environment"></div>
+        <div class="screen-caption"><span id="desktopEdition">PH4NTXM Abyss / XFCE live environment</span><span>Operational state remains local to the session</span></div>
+      </div>
+    </section>
+
+    <section id="nuke" class="nuke">
+      <div class="shell nuke-grid">
+        <div class="nuke-copy reveal"><div class="section-kicker">05 / Nuke Kernel</div><h2>Every shutdown ends at Nuke.</h2><p>Shutdown, restart, halt, Panic, and armed USB removal all use the same path. The system blocks networking, ends the live session, disables swap, scrubs available RAM, and transfers control to the clean Nuke kernel.</p><div class="actions"><a class="btn btn-quiet" href="https://github.com/PH4NTXMOFFICIAL/PH4NTXM/blob/main/docs/system/session/NUKE-KERNEL.md" target="_blank" rel="noopener noreferrer">Read Nuke documentation</a></div></div>
+        <div class="sequence reveal">
+          <div class="sequence-step" data-hologram="sequence-step-0"><span class="num">01</span><div><strong>ISOLATE</strong><p>Block links and radios. End the session. Disable swap.</p></div><span class="done">ARMED</span></div>
+          <div class="sequence-step" data-hologram="sequence-step-1"><span class="num">02</span><div><strong>AVAILABLE RAM WIPE</strong><p>Overwrite the RAM available to the main system.</p></div><span class="done">PASS</span></div>
+          <div class="sequence-step" data-hologram="sequence-step-2"><span class="num">03</span><div><strong>SEPARATE NUKE KERNEL</strong><p>Transfer control to a clean Nuke kernel kept ready in memory.</p></div><span class="done">LOADED</span></div>
+          <div class="sequence-step" data-hologram="sequence-step-3"><span class="num">04</span><div><strong>MEMORY TEST + FINAL WIPE</strong><p>Overwrite memory with multiple patterns, make the final available wipe, and power off.</p></div><span class="done">FINAL</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scope">
+      <div class="shell">
+        <div class="truth reveal" data-hologram="truth-0"><div class="truth-mark">!</div><div><h3>WHAT PH4NTXM DOES NOT CLAIM</h3><p>PH4NTXM reduces session-linking signals and blocks accidental network fallback. It cannot protect a compromised machine, compromised firmware, operator mistakes, physical side channels, or every forensic method. RAM and file overwrite remain best effort.</p></div></div>
+      </div>
+    </section>
+
+    <section id="source">
+      <div class="shell">
+        <div class="source-card reveal" data-hologram="source-card-0">
+          <div><div class="section-kicker">06 / Open source</div><h2>Inspect it.<br>Audit it. Build it.</h2><p>PH4NTXM is open-source under GNU GPL v3. Build your own ISO on Debian 13, then boot from USB directly on your computer. Audits, tests, and patches are welcome.</p><div class="actions"><a class="btn btn-primary" href="https://github.com/PH4NTXMOFFICIAL/PH4NTXM" target="_blank" rel="noopener noreferrer">Open repository</a><a class="btn btn-quiet" href="mailto:ph4ntxmofficial@proton.me">Contact</a></div></div>
+          <div class="source-facts"><div class="fact"><span>BASE</span><span>DEBIAN / XFCE</span></div><div class="fact"><span>SYSTEM</span><span>64-BIT AMD / INTEL</span></div><div class="fact"><span>SESSION</span><span>LIVE / DISPOSABLE</span></div><div class="fact"><span>DELIVERY</span><span>SOURCE ONLY / NO PREBUILT ISO</span></div><div class="fact"><span>LICENSE</span><span>GNU GPL v3.0</span></div><div class="fact"><span>ENCRYPTION KEY</span><a href="https://github.com/PH4NTXMOFFICIAL/PH4NTXM/blob/main/ph4ntxm-public-key.asc" target="_blank" rel="noopener noreferrer">PUBLIC KEY ↗</a></div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell">
+      <div class="footer-grid"><div class="footer-brand"><img src="ph4ntxm-logo.png" alt=""><span><strong>PH4NTXM</strong><small>Operational Security Research &amp; Adversarial System Modeling</small></span></div><div class="footer-links"><a href="#architecture">Architecture</a><a href="#modes">Modes</a><a href="https://github.com/PH4NTXMOFFICIAL/PH4NTXM/blob/main/INSTALLATION.md" target="_blank" rel="noopener noreferrer">Build guide</a><a href="https://github.com/PH4NTXMOFFICIAL/PH4NTXM" target="_blank" rel="noopener noreferrer">GitHub</a><a href="mailto:ph4ntxmofficial@proton.me">Contact</a></div></div>
+      <div class="legal"><p>PH4NTXM is intended for lawful security research and controlled environments. Operators are responsible for local laws, image verification, and how they use the system.</p><span>© PH4NTXM / GPLv3</span></div>
+    </div>
+  </footer>
+
+
+  <dialog id="holoDialog" aria-labelledby="holoTitle" aria-describedby="holoBody">
+    <div class="holo-shell">
+      <div class="holo-top"><span class="holo-kicker" id="holoCategory">SYSTEM OVERVIEW</span><button type="button" class="holo-close" id="holoClose" aria-label="Close explanation" autofocus>×</button></div>
+      <h2 id="holoTitle"></h2>
+      <p id="holoBody"></p>
+      <div class="holo-footer">PH4NTXM / SYSTEM EXPLAINED</div>
+    </div>
+  </dialog>
+
+  <script>
+    const root=document.documentElement;
+    const themeButtons=document.querySelectorAll('[data-site-theme]');
+    const themeMeta=document.querySelector('meta[name="theme-color"]');
+    function setSiteTheme(theme){
+      root.dataset.theme=theme==='ghost'?'ghost':'abyss';
+      themeButtons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.siteTheme===root.dataset.theme)));
+      themeMeta.setAttribute('content',root.dataset.theme==='ghost'?'#f3f7fb':'#050a10');
+      const desktop=document.getElementById('desktopPreview');
+      const edition=root.dataset.theme==='ghost'?'Ghost':'Abyss';
+      desktop.src=root.dataset.theme+'.png';
+      desktop.alt='PH4NTXM '+edition+' desktop environment';
+      document.getElementById('desktopEdition').textContent='PH4NTXM '+edition+' / XFCE live environment';
+    }
+    themeButtons.forEach(button=>button.addEventListener('click',()=>setSiteTheme(button.dataset.siteTheme)));
+
+    const progress=document.querySelector('.progress');
+    const menu=document.querySelector('.menu-toggle');
+    const links=document.querySelector('.nav-links');
+    const modeValue=document.getElementById('modeValue');
+    const routeName=document.getElementById('routeName');
+    const browserName=document.getElementById('browserName');
+    const modeButtons=document.querySelectorAll('[data-mode]');
+    const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    document.addEventListener('pointermove',event=>{
+      root.style.setProperty('--mx',`${event.clientX}px`);
+      root.style.setProperty('--my',`${event.clientY}px`);
+    },{passive:true});
+
+
+    const responsiveCards=document.querySelectorAll('.feature,.mode-card,.source-card,.gate,.sequence-step,.truth,.principle,.screen-frame');
+    responsiveCards.forEach(card=>{
+      const moveEdge=event=>{
+        if(reduced)return;
+        const rect=card.getBoundingClientRect();
+        card.style.setProperty('--edge-x',`${Math.max(0,Math.min(rect.width,event.clientX-rect.left))}px`);
+        card.style.setProperty('--edge-y',`${Math.max(0,Math.min(rect.height,event.clientY-rect.top))}px`);
+      };
+      card.addEventListener('pointermove',moveEdge,{passive:true});
+      card.addEventListener('pointerdown',event=>{
+        moveEdge(event);
+        if(event.pointerType!=='mouse')card.classList.add('card-touch');
+      },{passive:true});
+      const releaseCard=()=>card.classList.remove('card-touch');
+      card.addEventListener('pointerup',releaseCard,{passive:true});
+      card.addEventListener('pointercancel',releaseCard,{passive:true});
+      card.addEventListener('pointerleave',releaseCard,{passive:true});
+    });
+
+    const updateProgress=()=>{
+      const distance=document.documentElement.scrollHeight-window.innerHeight;
+      progress.style.transform=`scaleX(${distance>0?window.scrollY/distance:0})`;
+    };
+    window.addEventListener('scroll',updateProgress,{passive:true});
+    updateProgress();
+
+    menu.addEventListener('click',()=>{
+      const open=links.classList.toggle('open');
+      menu.setAttribute('aria-expanded',String(open));
+    });
+    links.addEventListener('click',event=>{
+      if(event.target.closest('a')){links.classList.remove('open');menu.setAttribute('aria-expanded','false')}
+    });
+
+    const preview=document.getElementById('pilotPreview');
+    const lockdownButton=document.getElementById('lockdownDemo');
+    const profiles={
+      LINUX:{browser:'Firefox ESR profile',route:'Packet transformation',description:'A Linux-aligned identity with Firefox ESR and protected direct connections.',destination:'INTERNET'},
+      WINDOWS:{browser:'Firefox ESR profile',route:'Packet transformation',description:'A Windows-aligned identity for your browser and network, running on the Linux live system.',destination:'INTERNET'},
+      LONEWOLF:{browser:'Tor Browser',route:'Tor-only routing',description:'An independent identity with Tor Browser. Connections go through Tor, with no direct fallback.',destination:'TOR → INTERNET'}
+    };
+    let selectedMode='LINUX';
+    let locked=false;
+    function renderPreview(){
+      const profile=profiles[selectedMode];
+      preview.dataset.previewMode=selectedMode;
+      preview.classList.toggle('is-locked',locked);
+      modeButtons.forEach(button=>{
+        const active=button.dataset.mode===selectedMode;
+        button.classList.toggle('active',active);
+        button.setAttribute('aria-pressed',String(active));
+      });
+      modeValue.textContent=selectedMode;
+      browserName.textContent=profile.browser;
+      routeName.textContent=profile.route;
+      document.getElementById('profileLabel').textContent=selectedMode+' PROFILE';
+      document.getElementById('profileDescription').textContent=profile.description;
+      document.getElementById('trafficDestination').textContent=locked?'BLOCKED':profile.destination;
+      document.getElementById('pilotStatus').textContent=locked?'NETWORK BLOCKED':'PROTECTED';
+      document.getElementById('pilotSubtitle').textContent=locked?'Lockdown on · session stays open':'all primary chains active';
+      document.getElementById('routeState').textContent=locked?'BLOCKED':'ACTIVE';
+      document.getElementById('connectionState').textContent=locked?'NETWORK ISOLATED':'NETWORK OPEN';
+      lockdownButton.textContent=locked?'Restore connection ↗':'Try Lockdown ↗';
+      lockdownButton.setAttribute('aria-pressed',String(locked));
+    }
+    const motionToggle=document.getElementById('motionToggle');
+    let effectsPaused=reduced;
+    const detailButtons=document.querySelectorAll('[data-detail]');
+    const insights={identity:'One linked identity, fresh for each session.',hardware:'Selected system details follow the same session profile.',browser:'Your browser follows the selected boot mode.',network:'Connections use the protection path for this mode.',firewall:'Network rules keep traffic on the permitted path.',nuke:'Normal shutdown and emergency termination share one cleanup path.'};
+    let selectedDetail=null;
+    function showInsight(){
+      document.getElementById('checkInsight').textContent=selectedDetail?(locked && (selectedDetail==='network'||selectedDetail==='firewall')?'Lockdown blocks incoming and outgoing traffic. The session stays open.':selectedDetail==='browser'&&selectedMode==='LONEWOLF'?'Tor Browser uses system Tor in an isolated environment.':insights[selectedDetail]):'Explore a protection layer above.';
+    }
+    function pulsePreview(){
+      showInsight();
+      if(effectsPaused || reduced || !preview.animate)return;
+      preview.animate([{filter:'brightness(1)'},{filter:'brightness(1.12)'},{filter:'brightness(1)'}],{duration:650,easing:'ease-out'});
+      document.querySelectorAll('#pilotPreview .check').forEach((row,index)=>row.animate([{opacity:.45,transform:'translateX(-5px)'},{opacity:1,transform:'translateX(0)'}],{duration:350,delay:index*45,easing:'ease-out'}));
+    }
+    detailButtons.forEach(button=>button.addEventListener('click',()=>{
+      selectedDetail=button.dataset.detail;
+      detailButtons.forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+      showInsight();
+    }));
+    function setEffects(){
+      preview.classList.toggle('effects-paused',effectsPaused);
+      motionToggle.setAttribute('aria-pressed',String(effectsPaused));
+      motionToggle.setAttribute('aria-label',effectsPaused?'Resume preview effects':'Pause preview effects');
+      motionToggle.textContent=effectsPaused?'Resume effects':'Pause effects';
+      if(effectsPaused && preview.getAnimations)preview.getAnimations({subtree:true}).forEach(animation=>{if(animation.constructor.name!=='CSSAnimation')animation.cancel()});
+    }
+    motionToggle.addEventListener('click',()=>{effectsPaused=!effectsPaused;setEffects()});
+    setEffects();
+    preview.addEventListener('pointermove',event=>{
+      if(effectsPaused || reduced || event.pointerType!=='mouse')return;
+      const rect=preview.getBoundingClientRect();
+      const x=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width));
+      const y=Math.max(0,Math.min(1,(event.clientY-rect.top)/rect.height));
+      preview.style.setProperty('--light-x',`${x*100}%`);
+      preview.style.setProperty('--light-y',`${y*100}%`);
+    });
+    preview.addEventListener('pointerleave',()=>{
+      preview.style.setProperty('--light-x','50%');preview.style.setProperty('--light-y','0%');
+    });
+    modeButtons.forEach(button=>button.addEventListener('click',()=>{
+      selectedMode=button.dataset.mode;
+      renderPreview();
+      pulsePreview();
+    }));
+    lockdownButton.addEventListener('click',()=>{locked=!locked;renderPreview();pulsePreview()});
+    renderPreview();
+
+    if(reduced || !('IntersectionObserver' in window)){document.querySelectorAll('.reveal').forEach(item=>item.classList.add('visible'))}
+    else{
+      root.classList.add('motion-ready');
+      const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{
+        if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target)}
+      }),{threshold:.12});
+      document.querySelectorAll('.reveal').forEach(item=>observer.observe(item));
+    }
+
+    const holograms={"node-0": {"title": "Choose your mode", "body": "Choose Linux, Windows, or Lonewolf when you boot. That choice sets the direction for the whole session and stays fixed until shutdown.", "category": "ARCHITECTURE"}, "node-1": {"title": "One session identity", "body": "A fresh identity links the system’s visible details together. Those details stay coherent during the session, then start fresh on the next boot.", "category": "ARCHITECTURE"}, "node-2": {"title": "A matching hardware profile", "body": "Selected hardware details follow the same profile, from processor and memory to graphics and screen. This changes supported reporting views, not the physical hardware.", "category": "ARCHITECTURE"}, "node-3": {"title": "A protected network path", "body": "Linux and Windows protect direct traffic with packet transformation and firewall checks. Lonewolf routes supported connections through Tor instead.", "category": "ARCHITECTURE"}, "node-4": {"title": "Ready for the session", "body": "Boot Pilot checks readiness before you continue or open the browser. Identity, Health, and the session controls remain available while you work.", "category": "ARCHITECTURE"}, "principle-0": {"title": "One connected lifecycle", "body": "Each stage prepares the next: choose a mode, build the identity, apply protection, then use the session. Normal shutdown and emergency termination share the Nuke cleanup path.", "category": "SYSTEM OVERVIEW"}, "mode-card-0": {"title": "Linux mode", "body": "A Linux-aligned profile brings together Firefox ESR, encrypted domain lookups, and protected direct connections. The session identity stays consistent while you work.", "category": "BOOT MODE"}, "mode-card-1": {"title": "Windows mode", "body": "The system presents a Windows-aligned browser and network profile while still running Linux. It uses Firefox ESR and the same protected direct traffic path as Linux mode.", "category": "BOOT MODE"}, "mode-card-2": {"title": "Lonewolf mode", "body": "An independent session identity pairs with Tor Browser and system-wide Tor routing for supported connections. If Tor is unavailable, applications do not fall back to a direct internet connection.", "category": "BOOT MODE"}, "feature-0": {"title": "Linked identity", "body": "The system builds a connected profile rather than changing each detail independently. Newly connected physical network adapters receive their protected address before use.", "category": "SYSTEM OVERVIEW"}, "feature-1": {"title": "Protected traffic", "body": "Packet transformation and firewall checks work together in Linux and Windows. A separate check at the network exit helps keep traffic from slipping around that protection.", "category": "SYSTEM OVERVIEW"}, "feature-2": {"title": "Private domain lookups", "body": "Domain lookups translate a website name into an address. Linux and Windows encrypt these requests; Lonewolf sends them through Tor without a direct fallback.", "category": "SYSTEM OVERVIEW"}, "feature-3": {"title": "Memory and time", "body": "Temporary memory noise and bounded clock variation run during the live session. The noise is not encryption and does not hide genuine secrets.", "category": "SYSTEM OVERVIEW"}, "feature-4": {"title": "Pilot, Health, and OpSec", "body": "Boot Pilot helps you check readiness, join Wi-Fi, and open your browser. Health and the OpSec tools give you a closer view of the session and its activity.", "category": "SYSTEM OVERVIEW"}, "feature-5": {"title": "The right browser for the mode", "body": "Firefox ESR follows the Linux or Windows session profile. Lonewolf launches Tor Browser in its own isolated environment, using the system’s Tor connection.", "category": "SYSTEM OVERVIEW"}, "feature-6": {"title": "Stay in control", "body": "Lockdown blocks network traffic while leaving the session open. Panic ends the session; the USB removal trigger does the same when armed.", "category": "SYSTEM OVERVIEW"}, "gate-0": {"title": "Protection before connection", "body": "The required checks depend on the selected mode. Failed protection keeps the affected network path blocked; these indicators illustrate the design, not your computer’s current state.", "category": "SYSTEM OVERVIEW"}, "screen-frame-0": {"title": "The live desktop", "body": "PH4NTXM uses an Xfce desktop with session controls and security tools close at hand. Boot from USB directly on your computer to use the intended live environment.", "category": "SYSTEM OVERVIEW"}, "sequence-step-0": {"title": "First, isolate", "body": "The shutdown path blocks network links and radios, ends the live session, and disables swap. Cleanup continues even if an individual step encounters a failure.", "category": "TERMINATION"}, "sequence-step-1": {"title": "Scrub available memory", "body": "The system attempts to overwrite memory it can allocate before shutdown. This is a best-effort cleanup, not a guarantee that every memory location is erased.", "category": "TERMINATION"}, "sequence-step-2": {"title": "A separate shutdown kernel", "body": "A dedicated kernel is prepared before network release and kept ready for termination. It provides a separate environment for the final memory cleanup.", "category": "TERMINATION"}, "sequence-step-3": {"title": "Final cleanup and power off", "body": "The dedicated runtime performs memory overwrite passes and powers off. Hardware limitations and sudden power loss can still prevent complete cleanup.", "category": "TERMINATION"}, "truth-0": {"title": "Know the boundaries", "body": "PH4NTXM reduces linking signals and accidental network fallback. A compromised host, account reuse, or an observer correlating traffic can still undermine privacy.", "category": "SYSTEM OVERVIEW"}, "source-card-0": {"title": "Build it, inspect it", "body": "The project is distributed as source, so you build your own ISO on Debian 13. Verify the source before building, then follow the build guide to prepare your USB.", "category": "SYSTEM OVERVIEW"}};
+    const holoDialog=document.getElementById('holoDialog');
+    let holoReturnFocus=null;
+    function openHologram(key,trigger){
+      const entry=holograms[key];
+      if(!entry || holoDialog.open)return;
+      holoReturnFocus=trigger;
+      document.getElementById('holoTitle').textContent=entry.title;
+      document.getElementById('holoBody').textContent=entry.body;
+      document.getElementById('holoCategory').textContent=entry.category;
+      holoDialog.classList.toggle('holo-still',reduced || effectsPaused);
+      holoDialog.showModal();
+      root.classList.add('holo-visible');
+    }
+    if(typeof holoDialog.showModal==='function'){
+      document.querySelectorAll('[data-hologram]').forEach(card=>{
+        const entry=holograms[card.dataset.hologram];
+        if(!entry)return;
+        card.classList.add('holo-enabled');
+        card.setAttribute('tabindex','0');
+        card.setAttribute('aria-haspopup','dialog');
+        card.setAttribute('aria-controls','holoDialog');
+        card.setAttribute('aria-label',entry.title+' — open explanation');
+        card.addEventListener('keydown',event=>{
+          if(event.target!==card || !['Enter',' '].includes(event.key))return;
+          event.preventDefault();
+          openHologram(card.dataset.hologram,card);
+        });
+        card.addEventListener('click',event=>{
+          if(event.target.closest('a,button,input,select,textarea') || window.getSelection()?.toString())return;
+          openHologram(card.dataset.hologram,card);
+        });
+      });
+      document.getElementById('holoClose').addEventListener('click',()=>holoDialog.close());
+      let backdropPress=false;
+      const outsideDialog=event=>{
+        const rect=holoDialog.getBoundingClientRect();
+        return event.clientX<rect.left || event.clientX>rect.right || event.clientY<rect.top || event.clientY>rect.bottom;
+      };
+      holoDialog.addEventListener('pointerdown',event=>{backdropPress=event.target===holoDialog && outsideDialog(event)});
+      holoDialog.addEventListener('click',event=>{if(backdropPress && event.target===holoDialog && outsideDialog(event))holoDialog.close();backdropPress=false});
+      holoDialog.addEventListener('close',()=>{
+        root.classList.remove('holo-visible');
+        if(holoReturnFocus?.isConnected)holoReturnFocus.focus({preventScroll:true});
+        holoReturnFocus=null;
+      });
+    }
+  </script>
+</body>
+</html>
