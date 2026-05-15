@@ -1,0 +1,1173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" href="ph4ntxm-logo.png">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="author" content="PH4NTXM" />
+<meta name="theme-color" content="#07090b" />
+<title>PH4NTXM · Operating System</title>
+<style>
+@font-face {
+font-family: 'Orbitron';
+font-style: normal;
+font-weight: 400;
+font-display: swap;
+src: url('orbitron-v35-latin-regular.woff2') format('woff2');
+}
+
+@font-face {
+font-family: 'Roboto Mono';
+font-style: normal;
+font-weight: 400;
+font-display: swap;
+src: url('roboto-mono-v31-latin-regular.woff2') format('woff2');
+}
+
+:root{
+--bg-0: #040608;
+--bg-1: #071018;
+--panel: rgba(11,16,18,0.75);
+--muted: #98a0a6;
+--text: #e6eef3;
+--cyan: #00e6ff;
+--purple: #b892ff;
+--glass-border: rgba(255,255,255,0.04);
+--glass-glow: rgba(0,230,255,0.06);
+--accent-gradient: linear-gradient(90deg,var(--cyan),var(--purple));
+--mono: 'Roboto Mono', monospace;       
+--sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue"; 
+--futuristic: 'Orbitron', sans-serif;   
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+margin:0;
+font-family:var(--sans);
+background: #0a1624; 
+color:var(--text);
+-webkit-font-smoothing:antialiased;
+-moz-osx-font-smoothing:grayscale;
+overflow-x:hidden;
+}
+
+a{color:var(--purple); text-decoration:none}
+a:hover{text-decoration:underline}
+
+.container{max-width:1100px; margin:0 auto; padding:36px 20px 80px;}
+
+header{display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:18px 0}
+.brand {display:flex; flex-direction:column; gap:6px}
+.brand .title{font-family:var(--mono); font-size:20px; letter-spacing:1px}
+.brand .sub{font-size:12px; color:var(--muted)}
+nav .links{display:flex; gap:10px; align-items:center}
+.nav-link{position:relative; padding:6px 10px; border-radius:6px; color:var(--text); opacity:0.95}
+.nav-link:hover{background:rgba(255,255,255,0.02)}
+.nav-link::after{content:''; position:absolute; left:10px; right:10px; bottom:6px; height:2px; width:0; background:var(--accent-gradient); transition:width .28s ease}
+.nav-link:hover::after{width:calc(100% - 20px)}
+
+.grid {
+display:grid;
+grid-template-columns:1fr 360px;
+gap:28px;
+align-items:stretch; 
+}
+@media (max-width:920px){ .grid{grid-template-columns:1fr;}}
+.card {
+background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+border:1px solid var(--glass-border);
+border-radius:14px;
+padding:22px;
+position:relative;
+overflow:hidden;
+backdrop-filter: blur(8px) saturate(120%);
+box-shadow: 0 8px 30px rgba(2,6,10,0.5);
+min-height:220px;
+height:100%;
+transition:transform .22s ease, box-shadow .22s ease;
+}
+.card:hover{transform:translateY(-6px); box-shadow:0 18px 48px rgba(2,6,10,0.6)}
+
+.card::before{
+content:"";
+position:absolute; inset:-2px;
+background: conic-gradient(from 0deg at 50% 50%, rgba(0,230,255,0.06), rgba(184,146,255,0.06), rgba(0,230,255,0.06));
+filter:blur(18px) saturate(120%);
+opacity:0;
+transition:opacity .5s ease;
+pointer-events:none;
+}
+.card:hover::before{opacity:1}
+
+.hero-inner{display:flex; flex-direction:column; gap:14px; min-height:100%}
+.logo-wrap{display:flex; align-items:center; justify-content:center; position:relative; padding-top:6px}
+.logo-wrap .aura{
+position:absolute; width:420px; height:420px; border-radius:50%;
+left:50%; top:20%;
+transform:translate(-50%,-20%);
+background: radial-gradient(circle at 30% 30%, rgba(0,230,255,0.12), rgba(184,146,255,0.06) 40%, transparent 60%);
+filter: blur(40px); pointer-events:none; z-index:0; animation:slowPulse 6s ease-in-out infinite alternate;
+}
+@keyframes slowPulse{from{transform:translate(-50%,-20%) scale(0.98)} to{transform:translate(-50%,-22%) scale(1.06)}}
+img.logo {width:18.5rem; max-width:70%; display:block; position:relative; z-index:2; filter:drop-shadow(0 0 30px rgba(0,230,255,0.06))}
+
+h1,h2,h3,h4,h5,h6 {font-family:var(--futuristic);} 
+.lead {color:var(--muted); margin-top:6px; font-size:14px; font-family:var(--futuristic); font-weight:500; letter-spacing:0.6px;}
+
+.actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+.btn{
+display:inline-flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; cursor:pointer;
+font-weight:600; font-size:14px; border:1px solid rgba(255,255,255,0.04);
+}
+.btn-download {
+background: linear-gradient(90deg, rgba(0,230,255,0.12), rgba(184,146,255,0.10));
+color:#f8fbff;
+box-shadow: 0 6px 28px rgba(0,230,255,0.04);
+transition:transform .18s ease, box-shadow .18s ease;
+}
+.btn-download:hover{transform:translateY(-3px); box-shadow:0 18px 48px rgba(0,230,255,0.08)}
+.btn-outline {background:transparent; color:var(--text); border:1px solid rgba(255,255,255,0.06)}
+
+.sha {font-family:var(--mono); font-size:12px; color:#bfefff; margin-top:10px}
+
+.btn-glass {
+background: linear-gradient(90deg, rgba(0,230,255,0.12), rgba(184,146,255,0.10));
+color: #f8fbff;
+border: 1px solid rgba(255,255,255,0.04);
+box-shadow: 0 6px 28px rgba(0,230,255,0.04);
+border-radius: 10px;
+padding: 10px 14px;
+font-weight: 600;
+font-size: 14px;
+cursor: pointer;
+display: inline-flex;
+align-items: center;
+gap: 10px;
+transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.btn-glass:hover {
+transform: translateY(-3px);
+box-shadow: 0 18px 48px rgba(0,230,255,0.08);
+}
+
+aside h3{margin:0 0 6px 0}
+aside ol{margin:8px 0 0 18px; color:var(--muted); font-size:13px}
+aside code{display:block; margin-top:8px; background:#020306; padding:8px; border-radius:6px; font-family:var(--mono); font-size:12px; color:#dff7ff}
+
+.paper {
+position: relative;
+margin-top: 28px;
+padding: 22px;
+background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+border-radius: 14px;
+border: 1px solid var(--glass-border);
+box-shadow: 0 8px 30px rgba(2,6,10,0.5);
+backdrop-filter: blur(8px) saturate(120%);
+overflow: hidden;
+transition: transform .22s ease, box-shadow .22s ease;
+}
+
+.paper:hover {
+transform: translateY(-4px);
+box-shadow: 0 18px 48px rgba(2,6,10,0.6);
+}
+
+.paper::before {
+content: "";
+position: absolute;
+inset: -2px;
+background: conic-gradient(from 0deg at 50% 50%, rgba(0,230,255,0.06), rgba(184,146,255,0.06), rgba(0,230,255,0.06));
+filter: blur(18px) saturate(120%);
+opacity: 0;
+transition: opacity .5s ease;
+pointer-events: none;
+}
+.paper:hover::before {
+opacity: 1;
+}
+
+footer{margin-top:28px; color:var(--muted); font-size:13px; display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap}
+
+.reveal {opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease}
+.reveal.visible{opacity:1; transform:translateY(0)}
+
+@media (max-width:920px){
+.grid{grid-template-columns:1fr; gap:18px}
+.logo-wrap .aura{width:300px; height:300px}
+img.logo{width:15rem}
+}
+
+aside.card {
+text-align: left !important;
+}
+
+aside.card * {
+text-align: left !important;
+margin-left: 0 !important;
+margin-right: auto !important;
+display: block !important;
+justify-content: flex-start !important;
+align-items: flex-start !important;
+}
+
+#heroTitle { font-family:var(--futuristic); background:var(--accent-gradient); -webkit-background-clip:text; color:transparent; }
+aside h3 { font-family:var(--futuristic); font-weight:700; background:var(--accent-gradient); -webkit-background-clip:text; color:transparent; }
+#founding h2, #founding h3, #founding h4 { font-family:var(--futuristic); background:var(--accent-gradient); -webkit-background-clip:text; color:transparent; }
+.highlight { font-family:var(--futuristic); background:var(--accent-gradient); -webkit-background-clip:text; color:transparent; font-weight:600; }
+</style>
+</head>
+<body>
+<div id="top"></div>
+<div class="container">
+
+<a
+rel="me"
+href="https://infosec.exchange/@PH4NTXMOFFICIAL"
+aria-hidden="true"
+style="display:none;"
+>
+Mastodon
+</a>
+
+<header>
+<div class="brand">
+<div class="title" style="margin-bottom: 5px;">
+<span style="font-family:var(--futuristic); background:var(--accent-gradient); -webkit-background-clip:text; color:transparent; font-size: 2.2em; letter-spacing: 2px; text-shadow: 0 0 20px rgba(0, 255, 255, 0.25);">
+PH4NTXM
+</span>
+</div>
+
+<div class="sub" style="color:white; opacity: 0.8; font-size: 13px; max-width: 500px; margin: 0 auto;">
+Operational Security Research & Adversarial System Modeling
+</div>
+</div>
+</header>
+
+<main class="grid">
+
+<section class="card hero reveal" id="heroCard" aria-labelledby="heroTitle">
+<div class="hero-inner">
+<div class="logo-wrap">
+<div class="aura" aria-hidden="true"></div>
+<img src="ph4ntxm-logo.png" alt="PH4NTXM logo" class="logo" />
+</div>
+
+<div style="padding:8px 6px">
+<h1 id="heroTitle" style="font-family:var(--futuristic);">
+PH4NTXM 
+<span style="font-size:13px; color:var(--muted); font-weight:500;">Operating System</span>
+</h1>
+
+<div class="lead" style="margin-bottom: 25px; color:white; font-family:var(--mono);">
+Freedom • Security • Anonymity • Hostile-Environment Ready
+</div>
+</div>
+<a class="btn btn-glass" href="#document">DOCUMENT</a>
+<a class="btn btn-glass" href="#features">FEATURES</a>
+<a class="btn btn-glass" href="#licensing">LICENSING</a>
+<a class="btn btn-glass" href="#contact">CONTACT & ACCESS</a>
+<a class="btn btn-glass" href="#opsec-suite">OPSEC SUITE</a>
+<a class="btn btn-glass" href="https://github.com/PH4NTXMOFFICIAL/PH4NTXM" target="_blank" rel="noopener noreferrer">GITHUB</a>
+</div>
+</section>
+      
+<aside class="card reveal" id="quickCard" aria-labelledby="quickTitle">
+
+<h3 id="quickTitle"
+style="
+font-family:var(--futuristic);
+font-weight:700;
+letter-spacing:1px;
+margin-bottom:18px;
+background:var(--accent-gradient);
+-webkit-background-clip:text;
+color:transparent;
+font-size:14px;
+text-shadow:0 0 5px rgba(0,255,255,0.25);">
+BUILD SPECIFICATIONS
+</h3>
+
+<div style="
+font-family:var(--mono);
+font-size:12px;
+line-height:1.7;
+margin-bottom:18px;
+">
+<div><strong>BASE:</strong> Debian / XFCE</div>
+<div><strong>ARCHITECTURE:</strong> amd64</div>
+<div><strong>EXCECUTION:</strong> Volatile / To-RAM</div>
+<div><strong>MODE:</strong> Amnesic / Live</div>
+<div><strong>DELIVERY:</strong> Source-Based</div>
+<div><strong>CRYPTOGRAPHY:</strong> Hybrid Post-Quantum</div>
+</div>
+
+<div style="
+height:1px;
+background:rgba(255,255,255,0.08);
+margin:18px 0;
+"></div>
+
+<ul style="
+list-style:none;
+padding:0;
+margin:0;
+font-family:var(--mono);
+font-size:11px;
+line-height:1.6;
+color:rgba(255,255,255,0.85);
+">
+<li style="margin-bottom:10px;">
+PH4NTXM runs only in controlled, authorized environments. Operator intent defines all actions.
+</li>
+<li style="margin-bottom:10px;">
+Execution is fully operator-controlled. Responsibility is absolute. Non-transferable.
+</li>
+<li style="margin-bottom:10px;">
+State is volatile. Data is ephemeral. Irreversible operations are expected.
+</li>
+<li style="margin-bottom:10px;">
+Certain procedures modify or destroy system state. Reversal is not provided.
+</li>
+<li style="margin-bottom:10px;">
+No shields, abstractions, or recovery features protect the operator from impact.
+</li>
+<li style="margin-bottom:10px;">
+Persistence, continuity, and inter-session data are not supported.
+</li>
+<li>
+Using PH4NTXM confirms operator understanding and acceptance of its model, constraints, and inherent risk.
+</li>
+</ul>
+</aside>
+</main>
+
+<section id="ph4ntxm-hero" style="text-align:center; padding:20px 0;">
+<img src="ph4ntxm-screen.png" 
+alt="PH4NTXM Desktop Environment"
+style="max-width:85%; height:auto; border-radius:16px; box-shadow:0 0 24px rgba(2,6,10,0.6);">
+</section>
+
+<article id="document" class="paper reveal"
+style="margin-top:28px; text-align:center; max-width:800px;
+margin-left:auto; margin-right:auto;"
+aria-labelledby="documentTitle">
+
+<h2 id="documentTitle"
+style="background:var(--accent-gradient); -webkit-background-clip:text;
+color:transparent; font-size:1.8em; margin-bottom:30px;
+text-shadow:0 0 15px rgba(0,255,255,0.25);">
+SYSTEM DOCUMENT
+</h2>
+
+<section style="color:#ffffff; font-size:0.9em; line-height:1.65; font-weight:normal; text-align:left;">
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:10px;">
+OVERVIEW
+</h3>
+<p>
+PH4NTXM is a Linux live system with embedded identity engine.
+</p>
+<p>
+Each session is stateless. Disposable. Self-contained.
+</p>
+<p>
+Persona-driven identity, runtime enforcement, and controlled execution govern all behavior.
+</p>
+<p>
+Execution occurs entirely in memory.
+</p>
+<p>
+Identity regenerates per session. No hardware traits, identifiers, or historical artifacts persist.
+</p>
+<p>
+System enforces coherence across layers. Behavior is plausible. Observed without exposing operator risk.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+WHY PH4NTXM?
+</h3>
+<p>
+Standard systems assume continuity. Identity persists. Signals accumulate. Fingerprints form.
+</p>
+<p>
+Observation and correlation turn persistence into vulnerability.
+</p>
+<p>
+Even well-configured systems leak patterns across network, timing, and identity layers.
+</p>
+<p>
+PH4NTXM removes continuity. It does not hide. It regenerates per session.
+</p>
+<p>
+Each session is independent. No historical linkage. No persistent identity. No trust in prior state.
+</p>
+<p>
+Goal is non-correlation. Observed behavior cannot be linked across sessions.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+DESIGN GOALS
+</h3>
+<p>
+PH4NTXM built around strict constraints. No persistent state. No stable fingerprints. Behavior plausible across layers.
+</p>
+<p>
+Identity, network, and system characteristics derived per session. Synchronized across layers. Controlled variability.
+</p>
+<p>
+Goals take priority over convenience, compatibility, or desktop expectations.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+THREAT MODEL
+</h3>
+<p>
+PH4NTXM assumes continuous observation. Passive and active entities. Network inspection. Infrastructure monitoring. Post-execution analysis.
+</p>
+<p>
+System prevents correlation across sessions. Stable identifiers eliminated. Behavioral signals randomized.
+</p>
+<p>
+Security applies within defined execution model. Unsafe practices or compromised environments outside scope.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+OPERATIONAL CONSIDERATIONS
+</h3>
+<p>
+Determinism takes priority over recoverability. Certain actions irreversible. State in memory only.
+</p>
+<p>
+Controlled teardown, strict network enforcement core. Not to be bypassed or relaxed.
+</p>
+<p>
+Operators must understand constraints. Operate within intended model.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+SOURCE MODEL & CONTINUITY
+</h3>
+<p>
+PH4NTXM open-source. Code available for inspection, audit, contribution.
+</p>
+<p>
+Transparency, collaboration, verification aligned with architecture.
+</p>
+<p>
+Contributions must respect core principles. Preserve behavioral consistency. Maintain foundational guarantees.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+INTENDED AUDIENCE
+</h3>
+<p>
+PH4NTXM for operators, researchers, and professionals managing attribution, correlation, inspection risk.
+</p>
+<p>
+Not a general-purpose OS. Not a casual privacy tool. Operational discipline required.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+DOCUMENTATION ACCESS
+</h3>
+<p>
+This document communicates system intent. High-level design only.
+</p>
+<p>
+Implementation, configuration, operational guidance provided under controlled access.
+</p>
+<p>
+Separation preserves effectiveness. Sensitive details not exposed.
+</p>
+
+<div style="text-align:center; margin-top:32px;">
+<a class="btn btn-glass" href="#top">↑</a>
+</div>
+
+</section>
+</article>
+
+<article id="features" class="paper reveal"
+style="margin-top:28px; text-align:center; max-width:800px;
+margin-left:auto; margin-right:auto;"
+aria-labelledby="featuresTitle">
+
+<h2 id="featuresTitle"
+style="background:var(--accent-gradient); -webkit-background-clip:text;
+color:transparent; font-size:1.8em; margin-bottom:30px;
+text-shadow:0 0 15px rgba(0,255,255,0.25);">
+FEATURES
+</h2>
+
+<section style="
+color:#ffffff;
+font-size:0.9em;
+line-height:1.6;
+font-weight:normal;
+text-align:left;
+">
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+0. BOOT MODES
+</h3>
+<p>
+PH4NTXM selects a deterministic boot mode at startup: LINUX, WINDOWS, or LONEWOLF.
+</p>
+<p>
+Selection occurs before any subsystem initializes. All identity surfaces built from a single model.
+</p>
+<p>
+Prevents cross-layer inconsistencies. Reduces correlation risk.
+</p>
+<p>
+LONEWOLF enforces full isolation. Network fully contained.
+</p>
+<p>
+All traffic routes through Tor. Clearnet blocked.
+</p>
+<p>
+DNS contained. IPv6 disabled. Fail-closed enforced.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+1. IDENTITY ADAPTION
+</h3>
+<p>
+Shows active system identity across hardware, network, and applications.
+</p>
+<p>
+Values derive from session identity graph. Match the selected boot mode.
+</p>
+<p>
+Read-only. Validation only. No side effects.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+2. HARDWARE ADAPTION
+</h3>
+<p>
+Hardware identity derived from seed + profile. DMI/SMBIOS injected with minor session variation.
+</p>
+<p>
+LONEWOLF: mostly entropy-driven. Identifiers randomized.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+3. GPU ADAPTION
+</h3>
+<p>
+GPU identity aligned with system class. Renderer, vendor, and OpenGL extensions consistent.
+</p>
+<p>
+LONEWOLF: entropy-driven, minimal exposure.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+4. CPU & MEMORY ADAPTION
+</h3>
+<p>
+CPU and memory derived from seed + hardware profile. Minor realistic variation allowed.
+</p>
+<p>
+LONEWOLF: entropy-driven, non-deterministic.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+5. CPU THERMAL ADAPTION
+</h3>
+<p>
+Compute modulated by thermal sensors with hysteresis to prevent static fingerprints.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+6. DISPLAY & SCREEN ADAPTION
+</h3>
+<p>
+Resolution, refresh rate, and multi-display awareness match GPU and system profile.
+</p>
+<p>
+LONEWOLF randomized within soft constraints.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+7. BROWSER VIEWPORT ADAPTION
+</h3>
+<p>
+Derived from display + seed. Stable offsets in LINUX/WINDOWS.
+</p>
+<p>
+LONEWOLF: entropy-driven, non-deterministic.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+8. CLOCK FUZZING
+</h3>
+<p>
+Applied at boot. Minor runtime jitter. System stability maintained.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+9. RAM SEEDING ENGINE
+</h3>
+<p>
+Persona-shaped memory allocation. Sparse entropy for low-level artifacts.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+10. PACKET TRANSFORMATION ENGINE
+</h3>
+<p>
+LINUX/WINDOWS: deterministic TCP/IP transformation.
+</p>
+<p>
+LONEWOLF: fully Tor-handled.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+11. NETWORK DRIFT
+</h3>
+<p>
+LINUX/WINDOWS: deterministic drift shaping.
+</p>
+<p>
+LONEWOLF: relies on Tor for latency handling.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+12. NET GHOST STACK
+</h3>
+<p>
+LINUX/WINDOWS: multiple interface simulation.
+</p>
+<p>
+LONEWOLF: minimal, Tor-aligned.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+13. SYSTEM HARDENING
+</h3>
+<p>
+Kernel, network, and runtime hardening applied across all boot modes.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+14. POST-QUANTUM CRYPTOGRAPHY
+</h3>
+<p>
+Hybrid PQC-first stack. Session-scoped keys. Transport aligned with identity.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+15. FIREWALL GUARDS
+</h3>
+<p>
+Continuous enforcement. Normal + lockdown modes. Tampering auto-recovery.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+16. HARDENED BROWSER
+</h3>
+<p>
+Persona-aligned. Fingerprint surfaces suppressed.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+17. IDENTITY
+</h3>
+<p>
+Read-only hostname, machine ID, MACs, clock. Accessible via GUI/CLI. Matches session identity.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+18. LOCKDOWN
+</h3>
+<p>
+User-triggered network lockdown. Drops all connections instantly.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+19. NUKE KERNEL
+</h3>
+<p>
+Secondary minimal kernel in memory. Activated for fast shutdown.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+20. PANIC BUTTON
+</h3>
+<p>
+Shuts processes. Drops network. Triggers Nuke kernel.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+21. USB REMOVAL NUKE
+</h3>
+<p>
+Removable USB acts as emergency trigger. Removal triggers Nuke termination. Dead-man switch behavior.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+22. SYSTEM WRAPPERS
+</h3>
+<p>
+/sys, /proc, /dev mapped to boot-mode state. Full coherence.
+</p>
+
+<div style="text-align:center; margin-top:32px;">
+<a class="btn btn-glass" href="#top">↑</a>
+</div>
+
+</section>
+</article>
+
+<article id="opsec-suite" class="paper reveal"
+style="margin-top:28px; text-align:center; max-width:800px;
+       margin-left:auto; margin-right:auto;" 
+aria-labelledby="opsecSuiteGuideTitle">
+
+<h2 id="opsecSuiteTitle"
+style="background:var(--accent-gradient); -webkit-background-clip:text;
+       color:transparent; font-size:1.8em; margin-bottom:30px;
+       text-shadow:0 0 15px rgba(0,255,255,0.25);">
+OPSEC SUITE
+</h2>
+
+<section style="color:#ffffff; font-size:0.9em; line-height:1.65; font-weight:normal; text-align:left;">
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:10px;">
+OVERVIEW
+</h3>
+<p>
+PH4NTXM OpSec Suite provides on-demand diagnostics across system layers.
+</p>
+<p>
+Modules cover network, kernel, processes, radio, and overall system state.
+</p>
+<p>
+All modules are read-only. No background telemetry. No persistent footprint.
+</p>
+<p>
+Operators can quickly assess integrity, detect anomalies, and manage sensitive data within the live session.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+ACCESSING THE SUITE
+</h3>
+<p>
+Launch from the PH4NTXM Menu:
+</p>
+<ul>
+<li>PH4NTXM Menu → PH4NTXM OpSec Suite</li>
+</ul>
+<p>
+Each module can also be run individually from the terminal:
+</p>
+<ul>
+<li><code>ph4ntxm-opsec-id</code></li>
+<li><code>ph4-shred</code></li>
+<li><code>ph4ntxm-opsec-network</code></li>
+<li><code>ph4ntxm-opsec-kernel</code></li>
+<li><code>ph4ntxm-opsec-process</code></li>
+<li><code>ph4ntxm-opsec-radio</code></li>
+<li><code>ph4ntxm-opsec-connwatch</code></li>
+</ul>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+PH4NTXM OPSEC ID
+</h3>
+<p>
+Generates full system identity and security report.
+</p>
+<ul>
+<li>Hostname, machine ID, boot mode</li>
+<li>Hardware info, DMI status</li>
+<li>GPU / graphics</li>
+<li>Network stack: TTL, TCP timestamps, window scaling</li>
+<li>Interface MACs</li>
+<li>DNS config and Tor service status</li>
+</ul>
+<p>Purpose: Snapshot of system identity and security. Read-only.</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+PH4NTXM OPSEC SHREDDER
+</h3>
+<p>
+Military-grade file destruction. DoD 5220.22-M compliant.
+</p>
+<ul>
+<li>Mark files or directories for shredding</li>
+<li>Recursive wiping</li>
+<li>Metadata sanitization (3 rounds default)</li>
+<li>Customizable overwrite passes (1–7)</li>
+</ul>
+<p>Purpose: Ensure sensitive data cannot be recovered.</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+PH4NTXM OPSEC NETWORK
+</h3>
+<p>
+Inspect system network state.
+</p>
+<ul>
+<li>Routes and gateways</li>
+<li>DNS config and external resolvers</li>
+<li>IPv6 exposure</li>
+<li>Active connections</li>
+<li>Suspicious traffic and namespaces</li>
+</ul>
+<p>Purpose: Detect leaks, public connections, and anomalies. Score per run.</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+PH4NTXM OPSEC KERNEL
+</h3>
+<p>
+Evaluate kernel security.
+</p>
+<ul>
+<li>Loaded modules, unsigned or suspicious</li>
+<li>Kernel hardening status</li>
+<li>Sysctl security parameters</li>
+<li>Lockdown mode check</li>
+</ul>
+<p>Purpose: Detect misconfigurations, weak protections. Kernel score per run.</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+PH4NTXM OPSEC PROCESS
+</h3>
+<p>
+Inspect processes for anomalies.
+</p>
+<ul>
+<li>Deleted, ephemeral, or memfd-based executables</li>
+<li>Processes from untrusted paths</li>
+<li>List suspicious processes</li>
+</ul>
+<p>Purpose: Detect unusual or malicious process activity. Score per run.</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+PH4NTXM OPSEC RADIO
+</h3>
+<p>
+Audit wireless interfaces.
+</p>
+<ul>
+<li>Bluetooth and Wi-Fi state</li>
+<li>Modem activity</li>
+<li>Monitor mode detection</li>
+<li>Nearby Wi-Fi networks</li>
+</ul>
+<p>Purpose: Detect RF leaks or insecure wireless. Score per run.</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+PH4NTXM OPSEC CONNWATCH
+</h3>
+<p>
+Monitor inbound TCP connections in real time.
+</p>
+<ul>
+<li>Track source IPs and repeated connection attempts</li>
+<li>Record targeted ports</li>
+<li>Live stats in runtime memory</li>
+<li>Loopback traffic ignored</li>
+</ul>
+<p>Purpose: Real-time operational awareness. Score per run.</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+REMEDIATION
+</h3>
+<p>
+Some modules provide optional remediation. Reduces exposure and restores safer states.
+</p>
+<p>
+Elevated privileges may be required.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+SUMMARY
+</h3>
+<p>
+PH4NTXM OpSec Suite provides session-scoped, read-only diagnostics.
+</p>
+<p>
+Secure shredding, anomaly detection, network, kernel, process, and radio assessment.
+</p>
+<p>
+Fast evaluation of system integrity. No persistent footprint. Live session only.
+</p>
+
+</section>
+</article>
+
+<article id="licensing" class="paper reveal"
+style="margin-top:28px; text-align:center; max-width:800px;
+       margin-left:auto; margin-right:auto;"
+aria-labelledby="licensingTitle">
+
+<h2 id="licensingTitle"
+style="background:var(--accent-gradient); -webkit-background-clip:text;
+       color:transparent; font-size:1.8em; margin-bottom:30px;
+       text-shadow:0 0 15px rgba(0,255,255,0.25);">
+LICENSING
+</h2>
+
+<section style="
+color:#ffffff;
+font-size:0.9em;
+line-height:1.65;
+font-weight:normal;
+text-align:left;
+">
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:10px;">
+LICENSING MODEL
+</h3>
+<p>
+PH4NTXM is released as an open-source project under the GNU General
+Public License v3.0 (GPLv3).
+</p>
+<p>
+This allows anyone to use, study, modify, and redistribute the system,
+provided that all derivative works remain under the same license terms.
+</p>
+<p>
+The goal is to ensure transparency, verifiability, and long-term
+accessibility of the platform without introducing restrictions on use.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+UPDATE MODEL
+</h3>
+<p>
+Updates are public. Available to all users. No restrictions.
+</p>
+<p>
+They may include security fixes, behavioral tweaks, and system refinements. Aligned with platform goals.
+</p>
+<p>
+No enforced schedules. No access limits. Operators track, adopt, or modify updates as needed.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+DISTRIBUTION
+</h3>
+<p>
+PH4NTXM is distributed publicly. Independent builds, verification, and reproducibility supported.
+</p>
+<p>
+Operators are responsible for building, deploying, and running the system in their environment.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:30px;">
+TRADEMARK & IDENTITY
+</h3>
+<p>
+PH4NTXM name, branding, and visual identity remain protected.
+</p>
+<p>
+Modified versions must not imply official status or affiliation unless explicitly authorized.
+</p>
+
+<p style="margin-top:30px; font-style:italic; opacity:0.6; font-size:0.85em;">
+PH4NTXM is provided without warranty. Use, modification, and deployment are at operator’s own risk.
+</p>
+
+<div style="text-align:center; margin-top:32px;">
+  <a class="btn btn-glass" href="#top">↑</a>
+</div>
+
+</section>
+</article>
+
+<article id="contact" class="paper reveal"
+style="margin-top:28px; text-align:center; max-width:800px;
+       margin-left:auto; margin-right:auto;"
+aria-labelledby="contactTitle">
+
+<h2 id="contactTitle"
+style="background:var(--accent-gradient); -webkit-background-clip:text;
+       color:transparent; font-size:1.8em; margin-bottom:30px;
+       text-shadow:0 0 15px rgba(0,255,255,0.25);">
+CONTACT & ACCESS
+</h2>
+
+<section style="
+color:#ffffff;
+font-size:0.9em;
+line-height:1.65;
+font-weight:normal;
+text-align:left;
+">
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:20px;">
+SOURCE ACCESS
+</h3>
+<p>
+PH4NTXM is open-source. Full source, build instructions, and docs publicly available.
+</p>
+<div style="
+margin:32px 0;
+padding:16px;
+background:rgba(0,0,0,0.65);
+border-left:3px solid magenta;
+font-family:var(--mono);
+font-size:0.9em;
+line-height:1.4;
+color:rgba(255,255,255,0.9);
+word-break:break-all;
+">
+https://github.com/PH4NTXMOFFICIAL/PH4NTXM
+</div>
+<p>
+Operators may inspect, build, modify, and deploy according to their operational needs.
+</p>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:40px;">
+CONTACT
+</h3>
+<div style="
+margin:32px 0;
+padding:16px;
+background:rgba(0,0,0,0.65);
+border-left:3px solid magenta;
+font-family:var(--mono);
+font-size:0.9em;
+line-height:1.4;
+color:rgba(255,255,255,0.9);
+">
+<span style="opacity:0.6;">CONTACT ENDPOINT:</span><br>
+PH4NTXMOFFICIAL@proton.me
+</div>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:40px;">
+COMMUNICATION GUIDELINES
+</h3>
+<p>
+Privacy-preserving practices are strongly recommended for sensitive communication.
+</p>
+<ol style="
+max-width:520px;
+margin:20px 0;
+padding-left:22px;
+font-family:var(--mono);
+font-size:0.85em;
+line-height:1.6;
+color:rgba(255,255,255,0.85);
+">
+<li>Use a privacy-respecting email provider.</li>
+<li>Encrypt messages with the public PGP key when appropriate.</li>
+<li>Include only minimum necessary information.</li>
+<li>Avoid personal or identifying details.</li>
+<li>Strip metadata from attachments when possible.</li>
+</ol>
+
+<h3 style="letter-spacing:2px; color:magenta; margin-top:40px;">
+PUBLIC PGP KEY
+</h3>
+<p style="font-size:0.8em; opacity:0.6;">
+Copy the full block. Partial keys are unusable.
+</p>
+
+<div style="
+background:rgba(0,0,0,0.6);
+border:1px solid rgba(255,255,255,0.12);
+padding:16px;
+height:180px;
+max-width:435px;
+margin:0;
+overflow:auto;
+font-family:var(--mono);
+font-size:0.7em;
+line-height:1.3em;
+color:rgba(255,255,255,0.85);
+white-space:pre-wrap;
+">-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+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
+=Lk5Z
+-----END PGP PUBLIC KEY BLOCK-----</div>
+
+<p style="margin-top:30px; font-style:italic; opacity:0.6; font-size:0.85em;">
+Encrypted communication is preferred.
+</p>
+
+<div style="text-align:center; margin-top:32px;">
+<a class="btn btn-glass" href="#top">↑</a>
+</div>
+
+</section>
+</article>
+
+<img
+src="ph4ntxm-signature.png"
+alt="PH4NTXM Signature"
+style="
+display:block;
+margin:32px auto 0;
+max-width:260px;
+opacity:0.75;
+"
+>
+
+<script>
+document.getElementById('copySha')?.addEventListener('click',()=>{
+navigator.clipboard.writeText(document.getElementById('shaText').innerText)
+.then(()=>alert('SHA256 copied!'))
+})
+const revealElems=document.querySelectorAll('.reveal');
+const observer=new IntersectionObserver(entries=>{
+entries.forEach(e=>{
+if(e.isIntersecting){e.target.classList.add('visible'); observer.unobserve(e.target)}
+})
+},{threshold:.1})
+revealElems.forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
